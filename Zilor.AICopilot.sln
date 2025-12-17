@@ -26,6 +26,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zilor.AICopilot.SharedKerne
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zilor.AICopilot.IdentityService", "src\Zilor.AICopilot.IdentityService\Zilor.AICopilot.IdentityService.csproj", "{C0EF352E-5987-4B3A-8721-9CDACBCB26FA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zilor.AICopilot.Services.Contracts", "src\Zilor.AICopilot.Services.Contracts\Zilor.AICopilot.Services.Contracts.csproj", "{5280D362-63ED-47AC-AE6C-4D858A415485}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zilor.AICopilot.Infrastructure", "src\Zilor.AICopilot.Infrastructure\Zilor.AICopilot.Infrastructure.csproj", "{E81C32B2-9299-4AEF-A812-D700CBBD6CB1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zilor.AICopilot.Services.Common", "src\Zilor.AICopilot.Services.Common\Zilor.AICopilot.Services.Common.csproj", "{250282E4-2116-46A8-AD8B-B0A6FDCD97F4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,6 +50,9 @@ Global
 		{515F3AD7-B6CF-4F15-B7A2-45FE78B79510} = {AF2A5565-16E6-4DC8-8431-F9723A5898EB}
 		{1E45FB31-EE24-4756-8BA1-7B7406CDF032} = {515F3AD7-B6CF-4F15-B7A2-45FE78B79510}
 		{C0EF352E-5987-4B3A-8721-9CDACBCB26FA} = {B1FD4B1B-84C6-48E6-9522-0E567C589A5F}
+		{5280D362-63ED-47AC-AE6C-4D858A415485} = {B1FD4B1B-84C6-48E6-9522-0E567C589A5F}
+		{E81C32B2-9299-4AEF-A812-D700CBBD6CB1} = {AA58CFB8-FDE3-4BAC-BA9B-D060D85348E0}
+		{250282E4-2116-46A8-AD8B-B0A6FDCD97F4} = {B1FD4B1B-84C6-48E6-9522-0E567C589A5F}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{928FA5D9-DEE1-4B92-94F7-D4171D1D7C97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -74,5 +83,17 @@ Global
 		{C0EF352E-5987-4B3A-8721-9CDACBCB26FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C0EF352E-5987-4B3A-8721-9CDACBCB26FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C0EF352E-5987-4B3A-8721-9CDACBCB26FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5280D362-63ED-47AC-AE6C-4D858A415485}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5280D362-63ED-47AC-AE6C-4D858A415485}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5280D362-63ED-47AC-AE6C-4D858A415485}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5280D362-63ED-47AC-AE6C-4D858A415485}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E81C32B2-9299-4AEF-A812-D700CBBD6CB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E81C32B2-9299-4AEF-A812-D700CBBD6CB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E81C32B2-9299-4AEF-A812-D700CBBD6CB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E81C32B2-9299-4AEF-A812-D700CBBD6CB1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{250282E4-2116-46A8-AD8B-B0A6FDCD97F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{250282E4-2116-46A8-AD8B-B0A6FDCD97F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{250282E4-2116-46A8-AD8B-B0A6FDCD97F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{250282E4-2116-46A8-AD8B-B0A6FDCD97F4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

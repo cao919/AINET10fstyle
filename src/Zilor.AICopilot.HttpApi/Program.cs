@@ -1,14 +1,13 @@
-using Zilor.AICopilot.EntityFrameworkCore;
 using Zilor.AICopilot.HttpApi;
+using Zilor.AICopilot.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
-builder.AddNpgsqlDbContext<AiCopilotDbContext>("ai-copilot");
+builder.AddInfrastructures();
+builder.AddServiceUseCase();
+builder.AddWebService();
 
 // Add services to the container.
-
-builder.Services.AddInfrastructures(builder.Configuration);
-builder.Services.AddServiceUseCase();
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -26,6 +25,8 @@ if (app.Environment.IsDevelopment())
         options.SwaggerEndpoint("/openapi/v1.json", "v1");
     });
 }
+
+app.UseExceptionHandler();
 
 app.UseHttpsRedirection();
 

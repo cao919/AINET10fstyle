@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Zilor.AICopilot.HttpApi.Infrastructure;
 using Zilor.AICopilot.HttpApi.Models;
 using Zilor.AICopilot.IdentityService.Commands;
@@ -14,5 +16,29 @@ public class IdentityController : ApiControllerBase
         var result = await Sender.Send(new CreateUserCommand(request.Username, request.Password));
 
         return ReturnResult(result);
+    }
+    
+    [HttpPost("login")]
+    public async Task<IActionResult> Login(UserLoginRequest request)
+    {
+        var result = await Sender.Send(new LoginUserCommand(request.Username, request.Password));
+        return ReturnResult(result);
+    }
+    
+    [HttpPost("role")]
+    public async Task<IActionResult> CreateRole(CreateRoleRequest request)
+    {
+        var result = await Sender.Send(new CreateRoleCommand(request.RoleName));
+        return ReturnResult(result);
+    }
+    
+    [HttpPost("test")]
+    public IActionResult Test()
+    {
+        return Ok(new
+        {
+            IsAuthenticated = User.Identity?.IsAuthenticated,
+            Username = User.FindFirstValue(ClaimTypes.Name)
+        });
     }
 }

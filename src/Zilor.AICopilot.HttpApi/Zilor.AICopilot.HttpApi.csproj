@@ -18,6 +18,7 @@
     <ItemGroup>
       <ProjectReference Include="..\Zilor.AICopilot.EntityFrameworkCore\Zilor.AICopilot.EntityFrameworkCore.csproj" />
       <ProjectReference Include="..\Zilor.AICopilot.IdentityService\Zilor.AICopilot.IdentityService.csproj" />
+      <ProjectReference Include="..\Zilor.AICopilot.Infrastructure\Zilor.AICopilot.Infrastructure.csproj" />
       <ProjectReference Include="..\Zilor.AICopilot.ServiceDefaults\Zilor.AICopilot.ServiceDefaults.csproj" />
     </ItemGroup>
 
