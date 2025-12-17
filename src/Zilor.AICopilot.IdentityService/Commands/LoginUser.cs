@@ -11,7 +11,7 @@ public record LoginUserCommand(string UserName, string Password) : ICommand<Resu
 
 public class LoginUserCommandHandler(
     UserManager<IdentityUser> userManager,
-    IJwtTokenGenerator jwtTokenGenerator) 
+    IJwtTokenGenerator tokenGenerator) 
     : ICommandHandler<LoginUserCommand, Result<LoginUserDto>>
 {
     public async Task<Result<LoginUserDto>> Handle(LoginUserCommand command, CancellationToken cancellationToken)
@@ -31,9 +31,9 @@ public class LoginUserCommandHandler(
         }
         
         // 3. 登录成功，生成 Token
-        var token = await jwtTokenGenerator.GenerateTokenAsync(user);
+        var token = await tokenGenerator.GenerateTokenAsync(user);
 
         // 4. 返回结果
-        return Result.Success(new LoginUserDto(user.UserName!, token));
+        return Result.Success(new LoginUserDto(command.UserName, token));
     }
 }

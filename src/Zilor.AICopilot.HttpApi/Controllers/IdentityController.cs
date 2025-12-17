@@ -32,12 +32,12 @@ public class IdentityController : ApiControllerBase
         return ReturnResult(result);
     }
     
+    [Authorize]
     [HttpPost("test")]
     public IActionResult Test()
     {
         return Ok(new
         {
-            IsAuthenticated = User.Identity?.IsAuthenticated,
             Username = User.FindFirstValue(ClaimTypes.Name)
         });
     }

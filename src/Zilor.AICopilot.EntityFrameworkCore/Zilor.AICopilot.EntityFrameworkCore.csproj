@@ -14,4 +14,9 @@
       <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.0" />
       <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
     </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Zilor.AICopilot.Core.AiGateway\Zilor.AICopilot.Core.AiGateway.csproj" />
+      <ProjectReference Include="..\Zilor.AICopilot.Services.Contracts\Zilor.AICopilot.Services.Contracts.csproj" />
+    </ItemGroup>
 </Project>

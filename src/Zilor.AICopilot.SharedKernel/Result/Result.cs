@@ -94,11 +94,11 @@ public class Result : Result<Result>
         return new Result(ResultStatus.Forbidden);
     }
 
-    public static Result Unauthorized(params string[] error)
+    public static Result Unauthorized(params string[] errors)
     {
         return new Result(ResultStatus.Unauthorized)
         {
-            Errors = error.AsEnumerable()
+            Errors = errors
         };
     }
 

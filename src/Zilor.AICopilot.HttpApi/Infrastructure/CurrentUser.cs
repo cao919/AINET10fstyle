@@ -8,7 +8,8 @@ public class CurrentUser : ICurrentUser
     public string? Id { get; }
     public string? UserName { get; }
     public string? Role { get; }
-    public bool IsAuthenticated { get; }
+
+    public bool IsAuthenticated { get; } = false;
 
     public CurrentUser(IHttpContextAccessor httpContextAccessor)
     { 

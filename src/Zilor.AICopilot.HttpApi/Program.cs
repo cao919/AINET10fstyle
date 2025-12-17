@@ -2,17 +2,17 @@ using Zilor.AICopilot.HttpApi;
 using Zilor.AICopilot.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
+
 builder.AddServiceDefaults();
+
 builder.AddInfrastructures();
 builder.AddServiceUseCase();
-builder.AddWebService();
+builder.AddWebServices();
 
 // Add services to the container.
-
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
