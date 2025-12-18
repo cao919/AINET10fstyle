@@ -4,23 +4,15 @@ namespace Zilor.AICopilot.Core.AiGateway.Aggregates.ConversationTemplate;
 
 public class ConversationTemplate : IAggregateRoot
 {
-    public Guid Id { get; set; }
-    public string Name { get; set; }
-    
-    public string Description { get; set; }
-    
-    public string SystemPrompt { get; set; }
-    
-    public TemplateSpecification Specification { get; set; }
-    
-    public bool IsEnabled { get; set; }
-    
-    protected ConversationTemplate() { }
-    
+    protected ConversationTemplate()
+    {
+    }
+
     public ConversationTemplate(
         string name,
         string description,
         string systemPrompt,
+        Guid modelId,
         TemplateSpecification specification)
     {
         Id = Guid.NewGuid();
@@ -28,9 +20,22 @@ public class ConversationTemplate : IAggregateRoot
         Description = description;
         SystemPrompt = systemPrompt;
         Specification = specification;
+        ModelId = modelId;
         IsEnabled = true;
     }
 
+    public Guid Id { get; set; }
+    public string Name { get; set; } = null!;
+
+    public string Description { get; set; } = null!;
+
+    public string SystemPrompt { get; set; } = null!;
+
+    public Guid ModelId { get; set; }
+
+    public TemplateSpecification Specification { get; set; } = null!;
+
+    public bool IsEnabled { get; set; }
 
     public void UpdateSpecification(TemplateSpecification spec)
     {

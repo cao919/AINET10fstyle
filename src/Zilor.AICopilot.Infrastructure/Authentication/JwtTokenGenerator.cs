@@ -4,7 +4,7 @@ using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Zilor.AICopilot.Services.Contracts;
+using Zilor.AICopilot.IdentityService.Contracts;
 
 namespace Zilor.AICopilot.Infrastructure.Authentication;
 
@@ -31,7 +31,7 @@ public class JwtTokenGenerator(
         {
             new(ClaimTypes.NameIdentifier, user.Id),
             new(ClaimTypes.Name, user.UserName!),
-            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()), // 保证 Token 唯一性
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()) // 保证 Token 唯一性
         };
 
         // 添加用户角色到 Claims

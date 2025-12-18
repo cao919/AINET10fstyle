@@ -1,9 +1,14 @@
-﻿using Zilor.AICopilot.Services.Common.Attributes;
-using Zilor.AICopilot.Services.Contracts;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Zilor.AICopilot.Services.Common.Attributes;
+using Zilor.AICopilot.Services.Common.Contracts;
 using Zilor.AICopilot.SharedKernel.Messaging;
 using Zilor.AICopilot.SharedKernel.Result;
 
-namespace Zilor.AICopilot.AiGatewayService.Sessions.Queries;
+namespace Zilor.AICopilot.AiGatewayService.Queries.Sessions;
 
 public record SessionDto
 {
@@ -17,7 +22,8 @@ public record GetListSessionsQuery : IQuery<Result<IList<SessionDto>>>;
 public class GetListSessionsQueryHandler(
     IDataQueryService dataQueryService) : IQueryHandler<GetListSessionsQuery, Result<IList<SessionDto>>>
 {
-    public async Task<Result<IList<SessionDto>>> Handle(GetListSessionsQuery request, CancellationToken cancellationToken)
+    public async Task<Result<IList<SessionDto>>> Handle(GetListSessionsQuery request,
+        CancellationToken cancellationToken)
     {
         var queryable = dataQueryService.Sessions
             .Select(s => new SessionDto
@@ -25,7 +31,7 @@ public class GetListSessionsQueryHandler(
                 Id = s.Id,
                 Title = s.Title
             });
-        var result= await dataQueryService.ToListAsync(queryable);
+        var result = await dataQueryService.ToListAsync(queryable);
         return Result.Success(result);
     }
 }

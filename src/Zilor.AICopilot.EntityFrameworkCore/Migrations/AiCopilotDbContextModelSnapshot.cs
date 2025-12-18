@@ -235,6 +235,9 @@ namespace Zilor.AICopilot.EntityFrameworkCore.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("is_enabled");
 
+                    b.Property<Guid>("ModelId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -244,9 +247,12 @@ namespace Zilor.AICopilot.EntityFrameworkCore.Migrations
                     b.Property<string>("SystemPrompt")
                         .IsRequired()
                         .HasColumnType("text")
-                        .HasColumnName("system_prompt");
+                        .HasColumnName("model_id");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("conversation_templates", (string)null);
                 });
@@ -282,6 +288,9 @@ namespace Zilor.AICopilot.EntityFrameworkCore.Migrations
                         .HasColumnName("provider");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Provider", "Name")
+                        .IsUnique();
 
                     b.ToTable("language_models", (string)null);
                 });
@@ -412,8 +421,8 @@ namespace Zilor.AICopilot.EntityFrameworkCore.Migrations
                                 .HasColumnType("integer")
                                 .HasColumnName("max_tokens");
 
-                            b1.Property<double?>("Temperature")
-                                .HasColumnType("double precision")
+                            b1.Property<float?>("Temperature")
+                                .HasColumnType("real")
                                 .HasColumnName("temperature");
 
                             b1.HasKey("ConversationTemplateId");
@@ -439,8 +448,8 @@ namespace Zilor.AICopilot.EntityFrameworkCore.Migrations
                                 .HasColumnType("integer")
                                 .HasColumnName("max_tokens");
 
-                            b1.Property<double>("Temperature")
-                                .HasColumnType("double precision")
+                            b1.Property<float>("Temperature")
+                                .HasColumnType("real")
                                 .HasColumnName("temperature");
 
                             b1.HasKey("LanguageModelId");

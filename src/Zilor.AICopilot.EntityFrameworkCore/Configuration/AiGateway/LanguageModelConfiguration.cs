@@ -26,11 +26,15 @@ public class LanguageModelConfiguration : IEntityTypeConfiguration<LanguageModel
             .HasMaxLength(100)
             .HasColumnName("name");
         
+        // 唯一约束
+        builder.HasIndex(lm => new { lm.Provider, lm.Name })
+            .IsUnique();
+
         builder.Property(lm => lm.BaseUrl)
             .IsRequired()
             .HasMaxLength(100)
             .HasColumnName("base_url");
-        
+
         builder.Property(lm => lm.ApiKey)
             .HasMaxLength(100)
             .HasColumnName("api_key");
@@ -42,7 +46,7 @@ public class LanguageModelConfiguration : IEntityTypeConfiguration<LanguageModel
             parametersBuilder.Property(p => p.MaxTokens)
                 .IsRequired()
                 .HasColumnName("max_tokens");
-            
+
             parametersBuilder.Property(p => p.Temperature)
                 .IsRequired()
                 .HasColumnName("temperature");

@@ -1,9 +1,14 @@
-﻿using Zilor.AICopilot.Services.Common.Attributes;
-using Zilor.AICopilot.Services.Contracts;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Zilor.AICopilot.Services.Common.Attributes;
+using Zilor.AICopilot.Services.Common.Contracts;
 using Zilor.AICopilot.SharedKernel.Messaging;
 using Zilor.AICopilot.SharedKernel.Result;
 
-namespace Zilor.AICopilot.AiGatewayService.LanguageModels.Queries;
+namespace Zilor.AICopilot.AiGatewayService.Queries.LanguageModels;
 
 public record LanguageModelDto
 {
@@ -22,7 +27,8 @@ public record GetListLanguageModelsQuery : IQuery<Result<IList<LanguageModelDto>
 public class GetListLanguageModelsQueryHandler(
     IDataQueryService dataQueryService) : IQueryHandler<GetListLanguageModelsQuery, Result<IList<LanguageModelDto>>>
 {
-    public async Task<Result<IList<LanguageModelDto>>> Handle(GetListLanguageModelsQuery request, CancellationToken cancellationToken)
+    public async Task<Result<IList<LanguageModelDto>>> Handle(GetListLanguageModelsQuery request,
+        CancellationToken cancellationToken)
     {
         var queryable = dataQueryService.LanguageModels
             .Select(lm => new LanguageModelDto
@@ -35,7 +41,7 @@ public class GetListLanguageModelsQueryHandler(
                 MaxTokens = lm.Parameters.MaxTokens,
                 Temperature = lm.Parameters.Temperature
             });
-        var result= await dataQueryService.ToListAsync(queryable);
+        var result = await dataQueryService.ToListAsync(queryable);
         return Result.Success(result);
     }
 }

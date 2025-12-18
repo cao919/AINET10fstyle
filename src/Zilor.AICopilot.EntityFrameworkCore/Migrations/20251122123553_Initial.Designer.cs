@@ -12,7 +12,7 @@ using Zilor.AICopilot.EntityFrameworkCore;
 namespace Zilor.AICopilot.EntityFrameworkCore.Migrations
 {
     [DbContext(typeof(AiCopilotDbContext))]
-    [Migration("20251113050807_Initial")]
+    [Migration("20251122123553_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -221,6 +221,147 @@ namespace Zilor.AICopilot.EntityFrameworkCore.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Zilor.AICopilot.Core.AiGateway.Aggregates.ConversationTemplate.ConversationTemplate", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)")
+                        .HasColumnName("description");
+
+                    b.Property<bool>("IsEnabled")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_enabled");
+
+                    b.Property<Guid>("ModelId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("name");
+
+                    b.Property<string>("SystemPrompt")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("model_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("conversation_templates", (string)null);
+                });
+
+            modelBuilder.Entity("Zilor.AICopilot.Core.AiGateway.Aggregates.LanguageModel.LanguageModel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("ApiKey")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("api_key");
+
+                    b.Property<string>("BaseUrl")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("base_url");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("name");
+
+                    b.Property<string>("Provider")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("provider");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Provider", "Name")
+                        .IsUnique();
+
+                    b.ToTable("language_models", (string)null);
+                });
+
+            modelBuilder.Entity("Zilor.AICopilot.Core.AiGateway.Aggregates.Sessions.Message", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("content");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<Guid>("SessionId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("session_id");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("type");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SessionId");
+
+                    b.ToTable("messages", (string)null);
+                });
+
+            modelBuilder.Entity("Zilor.AICopilot.Core.AiGateway.Aggregates.Sessions.Session", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<Guid>("TemplateId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("template_id");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("title");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_sessions_user_id");
+
+                    b.ToTable("sessions", (string)null);
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -270,6 +411,77 @@ namespace Zilor.AICopilot.EntityFrameworkCore.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Zilor.AICopilot.Core.AiGateway.Aggregates.ConversationTemplate.ConversationTemplate", b =>
+                {
+                    b.OwnsOne("Zilor.AICopilot.Core.AiGateway.Aggregates.ConversationTemplate.TemplateSpecification", "Specification", b1 =>
+                        {
+                            b1.Property<Guid>("ConversationTemplateId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<int?>("MaxTokens")
+                                .HasColumnType("integer")
+                                .HasColumnName("max_tokens");
+
+                            b1.Property<float?>("Temperature")
+                                .HasColumnType("real")
+                                .HasColumnName("temperature");
+
+                            b1.HasKey("ConversationTemplateId");
+
+                            b1.ToTable("conversation_templates");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ConversationTemplateId");
+                        });
+
+                    b.Navigation("Specification")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Zilor.AICopilot.Core.AiGateway.Aggregates.LanguageModel.LanguageModel", b =>
+                {
+                    b.OwnsOne("Zilor.AICopilot.Core.AiGateway.Aggregates.LanguageModel.ModelParameters", "Parameters", b1 =>
+                        {
+                            b1.Property<Guid>("LanguageModelId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<int>("MaxTokens")
+                                .HasColumnType("integer")
+                                .HasColumnName("max_tokens");
+
+                            b1.Property<float>("Temperature")
+                                .HasColumnType("real")
+                                .HasColumnName("temperature");
+
+                            b1.HasKey("LanguageModelId");
+
+                            b1.ToTable("language_models");
+
+                            b1.WithOwner()
+                                .HasForeignKey("LanguageModelId");
+                        });
+
+                    b.Navigation("Parameters")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Zilor.AICopilot.Core.AiGateway.Aggregates.Sessions.Message", b =>
+                {
+                    b.HasOne("Zilor.AICopilot.Core.AiGateway.Aggregates.Sessions.Session", "Session")
+                        .WithMany("Messages")
+                        .HasForeignKey("SessionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_messages_sessions_session_id");
+
+                    b.Navigation("Session");
+                });
+
+            modelBuilder.Entity("Zilor.AICopilot.Core.AiGateway.Aggregates.Sessions.Session", b =>
+                {
+                    b.Navigation("Messages");
                 });
 #pragma warning restore 612, 618
         }
