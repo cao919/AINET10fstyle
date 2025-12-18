@@ -21,6 +21,14 @@ public class AiGatewayController : ApiControllerBase
         return ReturnResult(result);
     }
 
+    
+   [HttpPost("language-model-update")]
+    public async Task<IActionResult> UpdateLanguageModel(UpdateLanguageModelCommand command)
+    {
+        var result = await Sender.Send(command);
+
+        return ReturnResult(result);
+    }
     [HttpDelete("language-model")]
     public async Task<IActionResult> DeleteLanguageModel(DeleteLanguageModelCommand command)
     {

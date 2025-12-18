@@ -8,16 +8,15 @@ public class LanguageModel : IAggregateRoot
     {
     }
 
-    public LanguageModel(string name, string provider, string baseUrl, string? apiKey, ModelParameters parameters)
+    public LanguageModel(Guid? id, string name, string provider, string baseUrl, string? apiKey, ModelParameters parameters)
     {
-        Id = Guid.NewGuid();
+        Id =id?? Guid.NewGuid();
         Name = name;
         Provider = provider;
         BaseUrl = baseUrl;
         ApiKey = apiKey;
         Parameters = parameters;
-    }
-
+    } 
     public Guid Id { get; set; }
 
     public string Provider { get; set; } = null!;

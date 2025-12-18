@@ -27,6 +27,7 @@ public class CreateLanguageModelCommandHandler(IRepository<LanguageModel> repo)
         CancellationToken cancellationToken)
     {
         var result = new LanguageModel(
+            null,
             request.Name,
             request.Provider,
             request.BaseUrl,
