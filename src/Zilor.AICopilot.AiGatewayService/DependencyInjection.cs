@@ -5,6 +5,7 @@ using Microsoft.Extensions.Hosting;
 using Zilor.AICopilot.AgentPlugin;
 using Zilor.AICopilot.AiGatewayService.Agents;
 using Zilor.AICopilot.AiGatewayService.Plugins;
+using Zilor.AICopilot.AiGatewayService.Workflows;
 
 namespace Zilor.AICopilot.AiGatewayService;
 
@@ -17,18 +18,22 @@ public static class DependencyInjection
             cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
         });
         
-        builder.Services.AddScoped<ChatAgentFactory>();
+        builder.Services.AddSingleton<ChatAgentFactory>();
         
         builder.Services.AddHttpClient("OpenAI", client =>
         {
             client.Timeout = TimeSpan.FromSeconds(30);
         });
-        
-        // builder.Services.AddSingleton<TimePlugin>();
+
+        builder.Services.AddScoped<TimeAgentPlugin>();
 
         builder.Services.AddAgentPlugin(registrar =>
         {
             registrar.RegisterPluginFromAssembly(Assembly.GetExecutingAssembly());
         });
+        
+        builder.Services.AddSingleton<IntentRoutingAgentBuilder>();
+        
+        builder.AddIntentWorkflow();
     }
 }

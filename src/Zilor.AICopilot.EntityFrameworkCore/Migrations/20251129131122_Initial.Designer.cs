@@ -12,7 +12,7 @@ using Zilor.AICopilot.EntityFrameworkCore;
 namespace Zilor.AICopilot.EntityFrameworkCore.Migrations
 {
     [DbContext(typeof(AiCopilotDbContext))]
-    [Migration("20251127105259_Initial")]
+    [Migration("20251129131122_Initial")]
     partial class Initial
     {
         /// <inheritdoc />

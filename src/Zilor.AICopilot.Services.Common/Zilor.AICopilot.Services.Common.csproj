@@ -12,5 +12,4 @@
 
         <ProjectReference Include="..\Zilor.AICopilot.SharedKernel\Zilor.AICopilot.SharedKernel.csproj"/>
     </ItemGroup>
-
 </Project>

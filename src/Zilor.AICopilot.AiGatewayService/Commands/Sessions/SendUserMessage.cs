@@ -6,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
-using Microsoft.Extensions.DependencyInjection;
 using Zilor.AICopilot.AgentPlugin;
 using Zilor.AICopilot.AiGatewayService.Agents;
 using Zilor.AICopilot.AiGatewayService.Plugins;
@@ -26,34 +25,35 @@ public class SendUserMessageCommandHandler(
     AgentPluginLoader pluginLoader)
     : ICommandHandler<SendUserMessageCommand, IAsyncEnumerable<string>>
 {
-    public async Task<IAsyncEnumerable<string>> Handle(SendUserMessageCommand request, CancellationToken cancellationToken)
+    public async Task<IAsyncEnumerable<string>> Handle(SendUserMessageCommand request,
+        CancellationToken cancellationToken)
     {
         var session = await repo.GetByIdAsync(request.SessionId, cancellationToken);
         if (session == null) throw new Exception("未找到会话");
-        
+
         var agent = await chatAgent.CreateAgentAsync(session.TemplateId);
         var storeThread = new { storeState = request.SessionId };
         var agentThread = agent.DeserializeThread(JsonSerializer.SerializeToElement(storeThread));
         
+        var tools = pluginLoader.GetAITools(nameof(TimeAgentPlugin));
+
         // 返回迭代器函数
-        return await Task.FromResult(GetStreamAsync(agent, agentThread, request.Content, cancellationToken));
+        return await Task.FromResult(GetStreamAsync(agent, agentThread, tools, request.Content, cancellationToken));
     }
 
     private async IAsyncEnumerable<string> GetStreamAsync(
-        ChatClientAgent agent, AgentThread thread, string input, [EnumeratorCancellation] CancellationToken cancellationToken)
+        ChatClientAgent agent, AgentThread thread, AITool[] tools, string input,
+        [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        var tools = pluginLoader.GetAITools(nameof(TimePlugin));
-        
         // 调用Agent流式读取响应
         await foreach (var update in agent.RunStreamingAsync(input, thread,
-                           new ChatClientAgentRunOptions()
+                           new ChatClientAgentRunOptions
                            {
-                               ChatOptions = new ChatOptions()
+                               ChatOptions = new ChatOptions
                                {
-                                   Tools = tools
+                                   Tools =  tools
                                }
-                           },
-                           cancellationToken: cancellationToken))
+                           }, cancellationToken: cancellationToken))
         {
             foreach (var content in update.Contents)
             {

@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
+using Zilor.AICopilot.AiGatewayService.Agents;
 using Zilor.AICopilot.AiGatewayService.Commands.ConversationTemplates;
 using Zilor.AICopilot.AiGatewayService.Commands.LanguageModels;
 using Zilor.AICopilot.AiGatewayService.Commands.Sessions;
@@ -85,27 +86,10 @@ public class AiGatewayController : ApiControllerBase
         return ReturnResult(result);
     }
     
-    [HttpPost("session/SendUserMessages")]
-    public async Task SendUserMessages(SendUserMessageCommand command)
+    [HttpPost("/chat")]
+    public IResult Chat(ChatStreamRequest request)
     {
-        var stream = await Sender.Send(command);
-
-        Response.StatusCode = 200;
-        Response.ContentType = "text/event-stream";
-        Response.Headers.CacheControl = "no-cache";
-        Response.Headers.Connection = "keep-alive";
-
-        await foreach (var token in stream)
-        {
-            var chunk = new
-            {
-                content = token
-            };
-
-            var json = JsonSerializer.Serialize(chunk);
-
-            await Response.WriteAsync($"data: {json}\n\n");
-            await Response.Body.FlushAsync();
-        }
+        var stream = Sender.CreateStream(request);
+        return Results.ServerSentEvents(stream);
     }
 }
