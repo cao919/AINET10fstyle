@@ -17,7 +17,7 @@ namespace Zilor.AICopilot.EntityFrameworkCore.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.11")
+                .HasAnnotation("ProductVersion", "10.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -236,7 +236,8 @@ namespace Zilor.AICopilot.EntityFrameworkCore.Migrations
                         .HasColumnName("is_enabled");
 
                     b.Property<Guid>("ModelId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("model_id");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -247,7 +248,7 @@ namespace Zilor.AICopilot.EntityFrameworkCore.Migrations
                     b.Property<string>("SystemPrompt")
                         .IsRequired()
                         .HasColumnType("text")
-                        .HasColumnName("model_id");
+                        .HasColumnName("system_prompt");
 
                     b.HasKey("Id");
 

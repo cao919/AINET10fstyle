@@ -33,7 +33,7 @@ public class SessionChatMessageStore : ChatMessageStore
         using var scope = _serviceProvider.CreateScope();
         var queryService = scope.ServiceProvider.GetRequiredService<IDataQueryService>();
 
-        // 先按时间倒序(Descending)取最新的 50 条
+        // 从数据库查询历史消息
         var queryable = queryService.Messages
             .Where(m => m.SessionId == ThreadDbKey)
             .OrderByDescending(m => m.CreatedAt)
@@ -41,8 +41,7 @@ public class SessionChatMessageStore : ChatMessageStore
         
         var dbMessages = await queryService.ToListAsync(queryable); 
         
-        // 在内存中反转回正序(Ascending)，因为语言需要按时间顺序阅读
-    	var orderedMessages = dbMessages.OrderBy(m => m.CreatedAt);
+        var orderedMessages = dbMessages.OrderBy(m => m.CreatedAt);
         
         // 将实体转换为 Agent 框架的 ChatMessage
         var chatMessages = new List<ChatMessage>();

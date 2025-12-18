@@ -6,7 +6,9 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
+using Microsoft.Extensions.DependencyInjection;
 using OpenAI;
+using Zilor.AICopilot.AiGatewayService.Plugins;
 using Zilor.AICopilot.Services.Common.Contracts;
 
 namespace Zilor.AICopilot.AiGatewayService.Agents;
@@ -44,22 +46,28 @@ public class ChatAgentFactory(
         
         var httpClient = httpClientFactory.CreateClient("OpenAI");
         
+        // var timePlugin = serviceProvider.GetRequiredService<TimePlugin>();
+        // var getCurrentTime = AIFunctionFactory.Create(timePlugin.GetCurrentTime);
+        
         var agent = new OpenAIClient(
                 new ApiKeyCredential(result.Model.ApiKey), 
                 new OpenAIClientOptions
                 {
                     Endpoint = new Uri(result.Model.BaseUrl),
-                    // 接管 OpenAI 的底层传输
                     Transport = new HttpClientPipelineTransport(httpClient)
                 })
             .GetChatClient(result.Model.Name)
-            .CreateAIAgent(new ChatClientAgentOptions
+            .AsIChatClient()
+            .AsBuilder()
+            .UseOpenTelemetry(sourceName: nameof(AiGatewayService), configure:client => client.EnableSensitiveData = true)
+            .BuildAIAgent(new ChatClientAgentOptions
             {
                 Name = result.Template.Name,
                 Instructions = result.Template.SystemPrompt,
                 ChatOptions = new ChatOptions
                 {
-                    Temperature = result.Template.Temperature ?? result.Model.Temperature
+                    Temperature = result.Template.Temperature ?? result.Model.Temperature,
+                    // Tools = [getCurrentTime]
                 },
                 ChatMessageStoreFactory = context => new SessionChatMessageStore(serviceProvider, context.SerializedState)
             });
