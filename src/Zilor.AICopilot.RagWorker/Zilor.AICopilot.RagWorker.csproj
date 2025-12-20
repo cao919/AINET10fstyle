@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <UserSecretsId>dotnet-Zilor.AICopilot.RagWorker-52a4e2b3-d8c3-4064-b4fa-99feff19cd74</UserSecretsId>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Aspire.Qdrant.Client" Version="13.0.2" />
+        <PackageReference Include="Microsoft.Extensions.AI.OpenAI" Version="10.0.1-preview.1.25571.5" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.0"/>
+        <PackageReference Include="Microsoft.SemanticKernel" Version="1.68.0" />
+        <PackageReference Include="Microsoft.SemanticKernel.Connectors.Qdrant" Version="1.68.0-preview" />
+        <PackageReference Include="PdfPig" Version="0.1.12" />
+        <PackageReference Include="SharpToken" Version="2.0.4" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Zilor.AICopilot.Core.Rag\Zilor.AICopilot.Core.Rag.csproj" />
+      <ProjectReference Include="..\Zilor.AICopilot.EntityFrameworkCore\Zilor.AICopilot.EntityFrameworkCore.csproj" />
+      <ProjectReference Include="..\Zilor.AICopilot.EventBus\Zilor.AICopilot.EventBus.csproj" />
+      <ProjectReference Include="..\Zilor.AICopilot.Infrastructure\Zilor.AICopilot.Infrastructure.csproj" />
+      <ProjectReference Include="..\Zilor.AICopilot.ServiceDefaults\Zilor.AICopilot.ServiceDefaults.csproj" />
+      <ProjectReference Include="..\Zilor.AICopilot.Services.Common\Zilor.AICopilot.Services.Common.csproj" />
+    </ItemGroup>
+</Project>
