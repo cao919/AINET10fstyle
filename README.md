@@ -1,57 +1,50 @@
 # AINET10fstyle
-
 企业AI助理系统采用分层架构设计，包含智能体交互、知识中枢（RAG）、数据分析（NL2SQL）和工具调用（MCP）三大核心功能模块，支持自然语言查询、跨系统操作和可视化报表生成。技术选型上选用ASP.NET Core后端框架、Semantic Kernel AI框架、Qdrant向量数据库，并支持私有化部署。系统通过权限控制确保安全性，采用容器化云原生部署方案，为企业提供覆盖现有系统的智能化交互层。
 
-## 项目结构
+该项目的代码结构表明它是一个基于 .NET 的微服务架构应用程序，主要功能包括 AI 网关服务、身份验证服务、RAG（Retrieval-Augmented Generation）服务等。该项目使用了多种现代软件开发技术，包括但不限于：
 
-- **Zilor.AICopilot.AppHost** - 应用程序的主宿主模块，用于启动服务。
-- **Zilor.AICopilot.EntityFrameworkCore** - 数据访问层，包含数据库上下文、迁移脚本及依赖注入配置。
-- **Zilor.AICopilot.HttpApi** - 提供 HTTP API 接口，包含控制器、模型及基础结构类。
-- **Zilor.AICopilot.IdentityService** - 身份认证服务模块，处理用户创建等操作。
-- **Zilor.AICopilot.MigrationWorkApp** - 数据库迁移与初始化模块，用于执行数据库迁移和种子数据填充。
-- **Zilor.AICopilot.ServiceDefaults** - 提供通用服务默认配置，如健康检查、OpenTelemetry 配置等。
-- **Zilor.AICopilot.SharedKernel** - 公共核心模块，包含通用接口、结果封装和消息处理。
-
-## 功能特性
-
-- 基于 .NET Minimal API 的轻量级服务架构。
-- 支持用户注册的身份认证系统。
-- 使用 Entity Framework Core 进行数据库迁移和管理。
-- 支持 OpenTelemetry 进行分布式追踪。
+- 领域驱动设计（DDD）
+- 命令查询职责分离（CQRS）使用 MediatR 模式进行命令和查询处理。
+- 事件驱动架构（EDA）
+- Entity Framework Core 用于数据访问
+- ASP.NET Core 用于构建 Web API
+- JWT 用于身份验证和授权
+- 向量数据库用于知识检索
 - 提供健康检查和默认服务配置。
-- 使用 MediatR 模式进行命令和查询处理。
+![输入图片说明](image01.png)
+![输入图片说明](image.png)
 
-## 安装与运行
+### 主要组件说明：
 
-### 前提条件
+#### 1. **AI 网关服务 (AiGatewayService)**
+   - 提供与 AI 模型交互的核心功能，如创建会话、发送用户消息、管理对话模板和语言模型。
+   - 包含插件系统，允许扩展 AI 功能（如 `TimeAgentPlugin`）。
+   - 使用工作流（Workflow）处理复杂的业务逻辑，如意图路由、知识检索和最终处理。
 
-- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
-- 数据库（支持 Entity Framework Core，如 SQLite、PostgreSQL 或 SQL Server）
+#### 2. **身份验证服务 (IdentityService)**
+   - 提供用户注册、登录和角色管理功能。
+   - 使用 JWT 生成身份验证令牌。
 
-### 构建项目
+#### 3. **RAG 服务 (RagService)**
+   - 提供知识库管理、文档上传和搜索功能。
+   - 支持多种文档格式（如 PDF、TXT、MD 等）的解析和向量化存储。
 
-```bash
-dotnet restore
-dotnet build
-```
+#### 4. **数据库访问 (EntityFrameworkCore)**
+   - 使用 Entity Framework Core 进行数据库操作。
+   - 包含多个聚合根（如 `LanguageModel`, `ConversationTemplate`, `Session`, `KnowledgeBase` 等）。
+   - 数据库（支持 Entity Framework Core，如 SQLite、PostgreSQL 或 SQL Server）
+#### 5. **基础设施 (Infrastructure)**
+   - 提供 JWT 生成、本地文件存储等通用功能。
 
-### 运行数据库迁移
+#### 6. **迁移工作应用 (MigrationWorkApp)**
+   - 用于数据库迁移和种子数据初始化。
 
-进入 `src/Zilor.AICopilot.MigrationWorkApp` 目录并运行：
+#### 7. **RAG 工作者 (RagWorker)**
+   - 后台服务，负责处理文档上传后的解析、分块、向量化和存储。
 
-```bash
-dotnet run
-```
+### 构建与运行
 
-这将自动执行数据库迁移并初始化种子数据。
-
-### 启动 Web API
-
-进入 `src/Zilor.AICopilot.HttpApi` 目录并运行：
-
-```bash
-dotnet run
-```
+该项目使用 .NET 10 SDK 进行构建。要运行该项目，请确保已安装 .NET 10 SDK，并按照以下步骤操作：
 
 服务将在默认端口上启动，你可以通过 `/api/identity/register` 等接口进行访问。
 
@@ -63,10 +56,34 @@ dotnet run
 
 ```json
 {
-  "username": "example",
-  "password": "password"
+  "username": " ",
+  "password": " "
 }
 ```
+
+1. **恢复依赖项**:
+   ```bash
+   dotnet restore
+   ```
+
+2. **构建项目**:
+   ```bash
+   dotnet build
+   ```
+
+3. **运行迁移工作应用**（用于初始化数据库）:
+   ```bash
+   dotnet run --project src/Zilor.AICopilot.MigrationWorkApp
+   ```
+
+4. **运行主应用程序**:
+   ```bash
+   dotnet run --project src/Zilor.AICopilot.AppHost
+   ```
+
+### 许可证
+
+该项目使用 MIT 许可证。有关详细信息，请参阅 `LICENSE` 文件。
 
 ## 贡献指南
 
@@ -78,10 +95,8 @@ dotnet run
 4. 推送分支 (`git push origin feature/new-feature`)
 5. 创建 Pull Request
 
+### 联系方式
 
-## dev4
-引入AI网关领域模型、服务、数据访问与API支持
-新增AiGateway领域聚合根（会话、消息、语言模型、对话模板）及其EF Core配置，实现CQRS用例与权限注解。扩展EntityFrameworkCore支持聚合根持久化与通用仓储，增加数据库迁移。新增AiGatewayController开放相关API。完善权限校验、依赖注入与项目结构，为AI相关业务开发奠定基础。
-## 许可证
+957801754
 
-本项目采用 MIT 许可证。详情请查看 [LICENSE](LICENSE) 文件。
+如果您有任何问题或建议，请联系项目维护者。
