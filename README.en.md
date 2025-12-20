@@ -1,83 +1,73 @@
-# AINET10fstyle
+The code structure of this project indicates it is a .NET-based microservices application, primarily featuring AI Gateway Service, Identity Service, RAG (Retrieval-Augmented Generation) Service, and more. The project leverages multiple modern software development technologies, including but not limited to:
 
-AINET10fstyle is an open-source project built on .NET, designed to provide a modular application architecture supporting features such as authentication, database migrations, and API services. This project is ideal for developers seeking to quickly establish a .NET-based microservices architecture.
+- Domain-Driven Design (DDD)
+- Command Query Responsibility Segregation (CQRS)
+- Event-Driven Architecture (EDA)
+- Entity Framework Core for data access
+- ASP.NET Core for building Web APIs
+- JWT for authentication and authorization
+- Vector databases for knowledge retrieval
 
-## Project Structure
+### Main Component Descriptions:
 
-- **Zilor.AICopilot.AppHost** - The main host module for starting services.
-- **Zilor.AICopilot.EntityFrameworkCore** - The data access layer, containing database contexts, migration scripts, and dependency injection configurations.
-- **Zilor.AICopilot.HttpApi** - Provides HTTP API endpoints, including controllers, models, and foundational classes.
-- **Zilor.AICopilot.IdentityService** - The authentication service module handling user creation and related operations.
-- **Zilor.AICopilot.MigrationWorkApp** - The database migration and initialization module for executing migrations and seeding data.
-- **Zilor.AICopilot.ServiceDefaults** - Provides common service defaults such as health checks and OpenTelemetry configurations.
-- **Zilor.AICopilot.SharedKernel** - The shared core module containing common interfaces, result wrappers, and message handling utilities.
+#### 1. **AI Gateway Service (AiGatewayService)**
+   - Provides core functionalities for interacting with AI models, such as creating sessions, sending user messages, managing conversation templates, and language models.
+   - Includes a plugin system to extend AI capabilities (e.g., `TimeAgentPlugin`).
+   - Uses workflows to handle complex business logic, such as intent routing, knowledge retrieval, and final processing.
 
-## Features
+#### 2. **Identity Service (IdentityService)**
+   - Offers user registration, login, and role management functionalities.
+   - Generates authentication tokens using JWT.
 
-- Lightweight service architecture based on .NET Minimal API.
-- Authentication system supporting user registration.
-- Database migration and management using Entity Framework Core.
-- Distributed tracing support via OpenTelemetry.
-- Built-in health checks and default service configurations.
-- Command and query handling using the MediatR pattern.
+#### 3. **RAG Service (RagService)**
+   - Provides knowledge base management, document upload, and search capabilities.
+   - Supports parsing and vectorized storage of various document formats (e.g., PDF, TXT, MD, etc.).
 
-## Installation and Running
+#### 4. **Data Access (EntityFrameworkCore)**
+   - Utilizes Entity Framework Core for database operations.
+   - Includes multiple aggregate roots (e.g., `LanguageModel`, `ConversationTemplate`, `Session`, `KnowledgeBase`, etc.).
 
-### Prerequisites
+#### 5. **Infrastructure**
+   - Provides common utilities such as JWT generation and local file storage.
 
-- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
-- A database compatible with Entity Framework Core (e.g., SQLite, PostgreSQL, or SQL Server)
+#### 6. **Migration Work App (MigrationWorkApp)**
+   - Used for database migrations and seed data initialization.
 
-### Build the Project
+#### 7. **RAG Worker (RagWorker)**
+   - A background service responsible for parsing, chunking, vectorizing, and storing documents after upload.
 
-```bash
-dotnet restore
-dotnet build
-```
+### Build and Run
 
-### Run Database Migrations
+This project is built using the .NET 10 SDK. To run the project, ensure that the .NET 10 SDK is installed, then follow these steps:
 
-Navigate to the `src/Zilor.AICopilot.MigrationWorkApp` directory and run:
+1. **Restore dependencies**:
+   ```bash
+   dotnet restore
+   ```
 
-```bash
-dotnet run
-```
+2. **Build the project**:
+   ```bash
+   dotnet build
+   ```
 
-This will automatically execute database migrations and seed initial data.
+3. **Run the Migration Work App** (to initialize the database):
+   ```bash
+   dotnet run --project src/Zilor.AICopilot.MigrationWorkApp
+   ```
 
-### Start the Web API
+4. **Run the main application**:
+   ```bash
+   dotnet run --project src/Zilor.AICopilot.AppHost
+   ```
 
-Navigate to the `src/Zilor.AICopilot.HttpApi` directory and run:
+### License
 
-```bash
-dotnet run
-```
+This project is licensed under the MIT License. For details, see the `LICENSE` file.
 
-The service will start on the default port. You can access endpoints such as `/api/identity/register`.
+### Contribution
 
-## Usage Example
+Contributions are welcome! Please refer to the contribution guidelines for information on how to participate in this project.
 
-### User Registration
+### Contact
 
-Send a POST request to the `/api/identity/register` endpoint:
-
-```json
-{
-  "username": "example",
-  "password": "password"
-}
-```
-
-## Contribution Guidelines
-
-Contributions and documentation improvements are welcome. Please follow these steps:
-
-1. Fork the project
-2. Create a new branch (`git checkout -b feature/new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin feature/new-feature`)
-5. Create a Pull Request
-
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+If you have any questions or suggestions, please contact the project maintainers.
