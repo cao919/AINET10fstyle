@@ -1,8 +1,8 @@
+using Zilor.AICopilot.Embedding;
 using Zilor.AICopilot.EntityFrameworkCore;
 using Zilor.AICopilot.EventBus;
 using Zilor.AICopilot.Infrastructure.Storage;
 using Zilor.AICopilot.RagWorker.Services;
-using Zilor.AICopilot.RagWorker.Services.Embeddings;
 using Zilor.AICopilot.RagWorker.Services.Parsers;
 using Zilor.AICopilot.RagWorker.Services.TokenCounter;
 using Zilor.AICopilot.Services.Common.Contracts;
@@ -38,20 +38,7 @@ builder.Services.AddSingleton<ITokenCounter, SharpTokenCounter>();
 // 文本分割
 builder.Services.AddSingleton<TextSplitterService>();
 
-// 注册嵌入生成器工厂
-builder.Services.AddSingleton<EmbeddingGeneratorFactory>();
-
-// 注册嵌入服务专用的 HttpClient
-builder.Services.AddHttpClient("EmbeddingClient", client =>
-{
-    client.Timeout = TimeSpan.FromMinutes(20);
-});
-
-// 注册 Qdrant 客户端
-// QdrantClient 是官方客户端，Semantic Kernel 会对其进行封装
-builder.AddQdrantClient("qdrant");
-// 注册 Semantic Kernel 的 Qdrant 向量存储抽象
-builder.Services.AddQdrantVectorStore();
+builder.AddEmbedding();
 
 var host = builder.Build();
 host.Run();

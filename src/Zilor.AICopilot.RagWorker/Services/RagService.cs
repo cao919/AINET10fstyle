@@ -2,9 +2,9 @@
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.VectorData;
 using Zilor.AICopilot.Core.Rag.Aggregates.KnowledgeBase;
+using Zilor.AICopilot.Embedding;
+using Zilor.AICopilot.Embedding.Models;
 using Zilor.AICopilot.EntityFrameworkCore;
-using Zilor.AICopilot.RagWorker.Models;
-using Zilor.AICopilot.RagWorker.Services.Embeddings;
 using Zilor.AICopilot.RagWorker.Services.Parsers;
 using Zilor.AICopilot.Services.Common.Contracts;
 
