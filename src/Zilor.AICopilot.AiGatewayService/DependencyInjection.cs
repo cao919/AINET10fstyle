@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Zilor.AICopilot.AgentPlugin;
 using Zilor.AICopilot.AiGatewayService.Agents;
-using Zilor.AICopilot.AiGatewayService.Plugins;
 using Zilor.AICopilot.AiGatewayService.Workflows;
 
 namespace Zilor.AICopilot.AiGatewayService;
@@ -24,8 +23,6 @@ public static class DependencyInjection
         {
             client.Timeout = TimeSpan.FromSeconds(30);
         });
-
-        builder.Services.AddScoped<TimeAgentPlugin>();
 
         builder.Services.AddAgentPlugin(registrar =>
         {

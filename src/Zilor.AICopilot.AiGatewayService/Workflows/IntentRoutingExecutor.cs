@@ -26,7 +26,7 @@ public class IntentRoutingExecutor(IntentRoutingAgentBuilder agentBuilder, IServ
             
             var scope = serviceProvider.CreateScope();
             var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
-        
+            
             var result = await mediator.Send(new GetListChatMessagesQuery(request.SessionId, 4), cancellationToken);
             var history = result.Value!;
         

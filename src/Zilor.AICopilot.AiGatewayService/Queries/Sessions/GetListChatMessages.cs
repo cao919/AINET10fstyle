@@ -20,7 +20,7 @@ public class GetListChatMessagesQueryHandler(
     {
         var query = queryService.Messages
             .Where(m => m.SessionId == request.SessionId)
-            .Take(request.Count);
+            .Take(4);
 
         query = request.IsDesc ? query.OrderByDescending(m => m.CreatedAt) : query.OrderBy(m => m.CreatedAt);
         

@@ -3,14 +3,12 @@ using System.ComponentModel;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
-using Zilor.AICopilot.AgentPlugin;
 using Zilor.AICopilot.IdentityService.Commands;
 
 namespace Zilor.AICopilot.IdentityService.Plugins;
 
-public class IdentityServiceTools : AgentPluginBase
+public static class IdentityServiceTools
 {
-    
     [DisplayName("CreateUser")]
     [Description("根据提供的用户名和密码创建一个新用户")]
     public static async Task<bool> CreateUserAsync(IServiceProvider sp, 

@@ -23,6 +23,7 @@ public class Worker(
             var dbContext = scope.ServiceProvider.GetRequiredService<AiCopilotDbContext>();
             var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+            
             await RunMigrationAsync(dbContext, cancellationToken);
             await SeedDataAsync(dbContext, roleManager, userManager, cancellationToken);
         }
@@ -72,19 +73,31 @@ public class Worker(
             else
                 Console.WriteLine("创建管理员失败：" + string.Join(",", result.Errors.Select(e => e.Description)));
         }
-        
+
         // 创建默认模型
         if (!await dbContext.LanguageModels.AnyAsync(cancellationToken: cancellationToken))
         {
             await dbContext.LanguageModels.AddRangeAsync(AiGatewayData.LanguageModels(), cancellationToken);
         }
-
+        
         // 创建默认对话模板
         if (!await dbContext.ConversationTemplates.AnyAsync(cancellationToken: cancellationToken))
         {
             await dbContext.ConversationTemplates.AddRangeAsync(AiGatewayData.ConversationTemplates(), cancellationToken);
         }
+        
+        // 创建默认嵌入模型
+        if (!await dbContext.EmbeddingModels.AnyAsync(cancellationToken: cancellationToken))
+        {
+            await dbContext.EmbeddingModels.AddRangeAsync(RagData.EmbeddingModels(), cancellationToken);
+        }
 
+        // 创建默认知识库
+        if (!await dbContext.KnowledgeBases.AnyAsync(cancellationToken: cancellationToken))
+        {
+            await dbContext.KnowledgeBases.AddRangeAsync(RagData.KnowledgeBases(), cancellationToken);
+        }
+        
         await dbContext.SaveChangesAsync(cancellationToken);
     }
 }

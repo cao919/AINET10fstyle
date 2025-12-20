@@ -19,8 +19,8 @@ public static class IntentWorkflow
             var toolsPackExecutor = sp.GetRequiredService<ToolsPackExecutor>();
             var finalProcessExecutor = sp.GetRequiredService<FinalProcessExecutor>();
             
-            var workflowBuilder = new WorkflowBuilder(intentRoutingExecutor)
-                .WithName(key)
+            var workflowBuilder = new WorkflowBuilder(intentRoutingExecutor);
+            workflowBuilder.WithName(key)
                 .AddEdge(intentRoutingExecutor, toolsPackExecutor)
                 .AddEdge(toolsPackExecutor, finalProcessExecutor);
             

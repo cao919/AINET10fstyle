@@ -2,6 +2,9 @@
 
 namespace Zilor.AICopilot.AiGatewayService.Agents;
 
+/// <summary>
+/// 意图识别的标准输出结果
+/// </summary>
 public record IntentResult
 {
     /// <summary>
