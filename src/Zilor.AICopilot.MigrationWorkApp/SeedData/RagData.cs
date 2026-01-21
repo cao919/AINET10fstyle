@@ -13,10 +13,10 @@ public static class RagData
     public static IEnumerable<EmbeddingModel> EmbeddingModels()
     {
         var item1 = new EmbeddingModel(
-            "Qwen3-4B-Q8_0", 
+            "Qwen3-4b-Q8_0", 
             "Qwen", 
-            "http://127.0.0.1:1234/v1",	// LM Studio API 端点
-            "text-embedding-qwen3-embedding-4b", // LM Studio 中的名称
+            "http://127.0.0.1:1234/v1",
+            "text-embedding-qwen3-embedding-4b", 
             2560, 
             32 * 1000)
         {

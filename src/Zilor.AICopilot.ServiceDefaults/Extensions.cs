@@ -28,7 +28,7 @@ public static class Extensions
         builder.Services.ConfigureHttpClientDefaults(http =>
         {
             // Turn on resilience by default
-            http.AddStandardResilienceHandler(options =>
+            http.AddStandardResilienceHandler(options => 
             {
                 // 将默认的 10秒 延长到 5分钟，这对大多数 AI 场景都更友好
                 options.AttemptTimeout.Timeout = TimeSpan.FromMinutes(5);

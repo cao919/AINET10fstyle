@@ -7,8 +7,10 @@ using OpenTelemetry;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Zilor.AICopilot.AiGatewayService;
+using Zilor.AICopilot.DataAnalysisService;
 using Zilor.AICopilot.HttpApi.Infrastructure;
 using Zilor.AICopilot.Infrastructure.Authentication;
+using Zilor.AICopilot.McpService;
 using Zilor.AICopilot.RagService;
 using Zilor.AICopilot.Services.Common.Behaviors;
 using Zilor.AICopilot.Services.Common.Contracts;
@@ -17,11 +19,6 @@ namespace Zilor.AICopilot.HttpApi;
 
 public static class DependencyInjection
 {
-    public static void ConfigAgentOpenTelemetry()
-    {
-
-    }
-    
     extension(IHostApplicationBuilder builder)
     {
         public void AddApplicationService()
@@ -36,7 +33,12 @@ public static class DependencyInjection
             });
             
             builder.AddAiGatewayService();
+            
+            builder.AddDataAnalysisService();
+            
             builder.AddRagService();
+            
+            builder.AddMcpService();
         }
 
         public void AddWebServices()

@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Zilor.AICopilot.AiGatewayService.Agents;
+namespace Zilor.AICopilot.AiGatewayService.Models;
 
 /// <summary>
 /// 意图识别的标准输出结果
@@ -31,7 +31,7 @@ public record IntentResult
     public string? Reasoning { get; set; }
     
     /// <summary>
-    /// 检索参数 (新增)
+    /// 检索参数
     /// 如果是 Knowledge 意图，模型可以在此提取查询关键词
     /// </summary>
     [JsonPropertyName("query")]

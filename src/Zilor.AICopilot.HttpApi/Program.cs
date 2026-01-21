@@ -1,7 +1,6 @@
 using OpenTelemetry;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
-using Zilor.AICopilot.EntityFrameworkCore;
 using Zilor.AICopilot.HttpApi;
 using Zilor.AICopilot.Infrastructure;
 
@@ -23,9 +22,6 @@ Sdk.CreateTracerProviderBuilder()
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
-
-builder.AddNpgsqlDbContext<AiCopilotDbContext>("ai-copilot");
- 
 
 builder.AddInfrastructures();
 builder.AddApplicationService();

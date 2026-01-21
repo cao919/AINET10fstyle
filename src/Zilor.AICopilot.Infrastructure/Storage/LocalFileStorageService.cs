@@ -14,6 +14,7 @@ public class LocalFileStorageService : IFileStorageService
         var uniqueFileName = $"{Guid.NewGuid()}_{fileName}";
         var relativePath = Path.Combine(UploadRoot, datePath);
         
+        // 获取程序根目录
         var fullDirectory = Path.Combine(RootPath, relativePath);
 
         if (!Directory.Exists(fullDirectory))

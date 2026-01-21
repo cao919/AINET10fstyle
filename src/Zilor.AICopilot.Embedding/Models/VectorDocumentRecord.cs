@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.VectorData;
 
-namespace Zilor.AICopilot.Embedding.Models;
+namespace Zilor.AICopilot.RagWorker.Models;
 
 /// <summary>
 /// 对应向量数据库中的一条记录

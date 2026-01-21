@@ -4,30 +4,37 @@
         <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
-        <UserSecretsId>dotnet-Zilor.AICopilot.RagWorker-52a4e2b3-d8c3-4064-b4fa-99feff19cd74</UserSecretsId>
+        <UserSecretsId>dotnet-Zilor.AICopilot.RagWorker-75c36550-3329-461f-87a3-207334506df6</UserSecretsId>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <ContainerFamily>noble-chiseled-extra</ContainerFamily>
+        <ContainerRepository>zilor/aicopilot-ragworker</ContainerRepository>
+        <ContainerImageTag>latest</ContainerImageTag>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Aspire.Qdrant.Client" Version="13.0.2" />
-        <PackageReference Include="Microsoft.Extensions.AI.OpenAI" Version="10.0.1-preview.1.25571.5" />
-        <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.0"/>
+      <Compile Remove="Models\VectorDocumentRecord.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ContainerEnvironmentVariable Include="TZ" Value="Asia/Shanghai" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Aspire.Qdrant.Client" Version="13.1.0" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.1" />
         <PackageReference Include="Microsoft.SemanticKernel" Version="1.68.0" />
-        <PackageReference Include="Microsoft.SemanticKernel.Connectors.Qdrant" Version="1.68.0-preview" />
         <PackageReference Include="PdfPig" Version="0.1.12" />
         <PackageReference Include="SharpToken" Version="2.0.4" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Zilor.AICopilot.Core.Rag\Zilor.AICopilot.Core.Rag.csproj" />
       <ProjectReference Include="..\Zilor.AICopilot.Embedding\Zilor.AICopilot.Embedding.csproj" />
       <ProjectReference Include="..\Zilor.AICopilot.EntityFrameworkCore\Zilor.AICopilot.EntityFrameworkCore.csproj" />
       <ProjectReference Include="..\Zilor.AICopilot.EventBus\Zilor.AICopilot.EventBus.csproj" />
       <ProjectReference Include="..\Zilor.AICopilot.Infrastructure\Zilor.AICopilot.Infrastructure.csproj" />
       <ProjectReference Include="..\Zilor.AICopilot.ServiceDefaults\Zilor.AICopilot.ServiceDefaults.csproj" />
       <ProjectReference Include="..\Zilor.AICopilot.Services.Common\Zilor.AICopilot.Services.Common.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Services\Embeddings\" />
     </ItemGroup>
 </Project>
