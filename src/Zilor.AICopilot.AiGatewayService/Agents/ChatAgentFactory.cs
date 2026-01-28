@@ -52,13 +52,12 @@ public class ChatAgentFactory(IServiceProvider serviceProvider)
 
         var chatOptions = new ChatOptions
         {
+            Instructions = template.SystemPrompt,
             Temperature = template.Specification.Temperature ?? model.Parameters.Temperature
         };
-        
         var agent = chatClientBuilder.BuildAIAgent(new ChatClientAgentOptions
             {
                 Name = template.Name,
-                Instructions = template.SystemPrompt,
                 ChatOptions = chatOptions,
                 ChatMessageStoreFactory = context => new SessionChatMessageStore(serviceProvider, context.SerializedState)
             });

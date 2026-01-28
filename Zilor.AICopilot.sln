@@ -46,6 +46,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zilor.AICopilot.RagWorker",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zilor.AICopilot.Embedding", "src\Zilor.AICopilot.Embedding\Zilor.AICopilot.Embedding.csproj", "{B2523E8A-19F9-4D00-8808-9FCE502F547F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zilor.AICopilot.Core.DataAnalysis", "src\Zilor.AICopilot.Core.DataAnalysis\Zilor.AICopilot.Core.DataAnalysis.csproj", "{91E0F268-9632-403B-B033-404DC3DDF6E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zilor.AICopilot.Dapper", "src\Zilor.AICopilot.Dapper\Zilor.AICopilot.Dapper.csproj", "{E55C600D-1CEF-4D68-BD38-54F745F94B3E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zilor.AICopilot.DataAnalysisService", "src\Zilor.AICopilot.DataAnalysisService\Zilor.AICopilot.DataAnalysisService.csproj", "{795475F4-A2A8-4144-A286-FD27AAC6F74A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -74,6 +80,9 @@ Global
 		{5AE25C77-1B3A-446C-A621-1DC1E3D551D8} = {B1FD4B1B-84C6-48E6-9522-0E567C589A5F}
 		{4A37D3F9-A17C-4CD1-9901-D94952F74CBF} = {D521379A-40F8-48EB-A545-76A238A0376C}
 		{B2523E8A-19F9-4D00-8808-9FCE502F547F} = {AA58CFB8-FDE3-4BAC-BA9B-D060D85348E0}
+		{91E0F268-9632-403B-B033-404DC3DDF6E8} = {50F4E192-9CFA-4E59-AF90-B3E6043B1C44}
+		{E55C600D-1CEF-4D68-BD38-54F745F94B3E} = {AA58CFB8-FDE3-4BAC-BA9B-D060D85348E0}
+		{795475F4-A2A8-4144-A286-FD27AAC6F74A} = {B1FD4B1B-84C6-48E6-9522-0E567C589A5F}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{928FA5D9-DEE1-4B92-94F7-D4171D1D7C97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -144,5 +153,17 @@ Global
 		{B2523E8A-19F9-4D00-8808-9FCE502F547F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B2523E8A-19F9-4D00-8808-9FCE502F547F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B2523E8A-19F9-4D00-8808-9FCE502F547F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{91E0F268-9632-403B-B033-404DC3DDF6E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91E0F268-9632-403B-B033-404DC3DDF6E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91E0F268-9632-403B-B033-404DC3DDF6E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91E0F268-9632-403B-B033-404DC3DDF6E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E55C600D-1CEF-4D68-BD38-54F745F94B3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E55C600D-1CEF-4D68-BD38-54F745F94B3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E55C600D-1CEF-4D68-BD38-54F745F94B3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E55C600D-1CEF-4D68-BD38-54F745F94B3E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{795475F4-A2A8-4144-A286-FD27AAC6F74A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{795475F4-A2A8-4144-A286-FD27AAC6F74A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{795475F4-A2A8-4144-A286-FD27AAC6F74A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{795475F4-A2A8-4144-A286-FD27AAC6F74A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

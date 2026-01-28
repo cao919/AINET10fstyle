@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Zilor.AICopilot.Core.AiGateway.Aggregates.ConversationTemplate;
 using Zilor.AICopilot.Core.AiGateway.Aggregates.LanguageModel;
 using Zilor.AICopilot.Core.AiGateway.Aggregates.Sessions;
+using Zilor.AICopilot.Core.DataAnalysis.Aggregates.BusinessDatabase;
 using Zilor.AICopilot.Core.Rag.Aggregates.EmbeddingModel;
 using Zilor.AICopilot.Core.Rag.Aggregates.KnowledgeBase;
 
@@ -23,6 +24,8 @@ public interface IDataQueryService
     public IQueryable<KnowledgeBase> KnowledgeBases { get; }
     public IQueryable<Document> Documents { get; }
     public IQueryable<DocumentChunk> DocumentChunks { get; }
+    
+    public IQueryable<BusinessDatabase> BusinessDatabases { get; }
 
     Task<T?> FirstOrDefaultAsync<T>(IQueryable<T> queryable) where T : class;
 

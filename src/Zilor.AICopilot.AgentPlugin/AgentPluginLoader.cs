@@ -1,10 +1,13 @@
 ﻿using System.Reflection;
 using Microsoft.Extensions.AI;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Zilor.AICopilot.AgentPlugin;
 
 public class AgentPluginLoader
 {
+    private readonly IServiceProvider _serviceProvider;
+
     // 缓存插件实例：Key=插件名, Value=插件实例
     private readonly Dictionary<string, IAgentPlugin> _plugins = new();
     
@@ -12,8 +15,11 @@ public class AgentPluginLoader
     private readonly Dictionary<string, AITool[]> _aiTools = new();
     
     // 构造函数注入所有的注册器
-    public AgentPluginLoader(IEnumerable<IAgentPluginRegistrar> registrars)
+    public AgentPluginLoader(
+        IEnumerable<IAgentPluginRegistrar> registrars,
+        IServiceProvider serviceProvider)
     {
+        _serviceProvider = serviceProvider;
         // 1. 汇总所有需要扫描的程序集，去重
         var assemblies = registrars
             .SelectMany(r => r.Assemblies)
@@ -39,7 +45,7 @@ public class AgentPluginLoader
         foreach (var type in pluginTypes)
         {
             // 创建实例
-            var plugin = (IAgentPlugin)Activator.CreateInstance(type)!;
+            var plugin = (IAgentPlugin)ActivatorUtilities.CreateInstance(_serviceProvider, type);
             
             // 存入缓存
             _plugins[plugin.Name] = plugin;
