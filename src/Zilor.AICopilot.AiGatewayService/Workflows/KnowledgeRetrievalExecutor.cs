@@ -16,7 +16,8 @@ using Zilor.AICopilot.Services.Common.Contracts;
 namespace Zilor.AICopilot.AiGatewayService.Workflows;
 
 public class KnowledgeRetrievalExecutor(
-    IServiceProvider serviceProvider,
+    IMediator mediator,
+    IDataQueryService dataQuery,
     ILogger<KnowledgeRetrievalExecutor> logger)
     : ReflectingExecutor<KnowledgeRetrievalExecutor>("KnowledgeRetrievalExecutor"),
         IMessageHandler<List<IntentResult>, BranchResult>
@@ -52,9 +53,6 @@ public async ValueTask<BranchResult> HandleAsync(
         .ToList();
 
     // 从数据库中批量查询 KnowledgeBaseId
-    using var scope = serviceProvider.CreateScope();
-    var dataQuery = scope.ServiceProvider.GetRequiredService<IDataQueryService>();
-
     var knowledgeBases = await dataQuery.ToListAsync(
         dataQuery.KnowledgeBases.Where(kb => kbNames.Contains(kb.Name))
     );
@@ -113,8 +111,6 @@ private async Task<string> ExecuteSearchAsync(
     {
         // 调用 RagService 的 SearchKnowledgeBaseQuery
         // TopK=3, MinScore=0.5 是经验参数，可以根据业务需求调整
-        using var scope = serviceProvider.CreateScope();
-        var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
         var query = new SearchKnowledgeBaseQuery(kbId, queryText, TopK: 3, MinScore: 0.5);
         var result = await mediator.Send(query, ct);
 

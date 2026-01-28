@@ -10,7 +10,8 @@ namespace Zilor.AICopilot.AiGatewayService.Workflows;
 public enum BranchType
 {
     Tools,          // 工具定义分支
-    Knowledge       // 知识检索分支
+    Knowledge,       // 知识检索分支
+    DataAnalysis    // 数据分析分支
 }
 
 /// <summary>
@@ -33,6 +34,12 @@ public record BranchResult
     /// 知识文本数据（当 Type == Knowledge 时有值）
     /// </summary>
     public string? Knowledge { get; init; }
+    
+    /// <summary>
+    /// 数据分析结果（当 Type == DataAnalysis 时有值）
+    /// 通常包含 JSON 数据
+    /// </summary>
+    public string? DataAnalysis { get; init; }
 
     // 静态工厂方法，简化创建过程
     
@@ -41,6 +48,10 @@ public record BranchResult
 
     public static BranchResult FromKnowledge(string knowledge) => 
         new() { Type = BranchType.Knowledge, Knowledge = knowledge };
+    
+    // 数据分析结果工厂方法
+    public static BranchResult FromDataAnalysis(string result) => 
+        new() { Type = BranchType.DataAnalysis, DataAnalysis = result };
 }
 
 /// <summary>
@@ -63,4 +74,9 @@ public class GenerationContext
     /// 聚合后的知识上下文
     /// </summary>
     public string KnowledgeContext { get; set; } = string.Empty;
+    
+    /// <summary>
+    /// 聚合后的数据分析上下文
+    /// </summary>
+    public string DataAnalysisContext { get; set; } = string.Empty;
 }

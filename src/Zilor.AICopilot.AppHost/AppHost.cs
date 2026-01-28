@@ -2,8 +2,13 @@ using Projects;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
-var postgresdb = builder.AddPostgres("postgres")
+//  定义一个固定的密码参数 (Secret)
+var password = builder.AddParameter("pg-password", secret: true);
+
+var postgresdb = builder.AddPostgres("postgres", password: password)
+    .WithHostPort(5432)
     .WithDataVolume("postgres-aicopilot")
+    .WithBindMount("./Sql", "/docker-entrypoint-initdb.d")
     .WithPgWeb(pgAdmin => pgAdmin.WithHostPort(5050))
     .AddDatabase("ai-copilot");
 

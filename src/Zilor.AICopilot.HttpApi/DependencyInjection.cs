@@ -7,6 +7,7 @@ using OpenTelemetry;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Zilor.AICopilot.AiGatewayService;
+using Zilor.AICopilot.DataAnalysisService;
 using Zilor.AICopilot.HttpApi.Infrastructure;
 using Zilor.AICopilot.Infrastructure.Authentication;
 using Zilor.AICopilot.RagService;
@@ -37,6 +38,7 @@ public static class DependencyInjection
             
             builder.AddAiGatewayService();
             builder.AddRagService();
+            builder.AddDataAnalysisService();
         }
 
         public void AddWebServices()

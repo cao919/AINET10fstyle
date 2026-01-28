@@ -23,7 +23,6 @@ public record ColumnMetadata
 /// 提供数据库元数据探索和SQL执行能力，是Text-to-SQL的核心组件。
 /// </summary>
 public class DataAnalysisPlugin(
-    IServiceProvider serviceProvider,
     IDatabaseConnector dbConnector,
     ILogger<DataAnalysisPlugin> logger) : AgentPluginBase
 {
@@ -31,10 +30,9 @@ public class DataAnalysisPlugin(
 
     // 辅助方法：根据名称获取数据库配置
     // 这个方法不暴露给 AI，仅供内部使用
-    private async Task<BusinessDatabase> GetDatabaseAsync(string databaseName, CancellationToken ct)
+    private async Task<BusinessDatabase> GetDatabaseAsync(IServiceProvider sp, string databaseName, CancellationToken ct)
     {
-        using var scope = serviceProvider.CreateScope();
-        var dataQuery = scope.ServiceProvider.GetRequiredService<IDataQueryService>();
+        var dataQuery = sp.GetRequiredService<IDataQueryService>();
         var queryable = dataQuery.BusinessDatabases.Where(d => d.Name == databaseName);
         var db = await dataQuery.FirstOrDefaultAsync(queryable);
 
@@ -53,12 +51,13 @@ public class DataAnalysisPlugin(
     
     [Description("获取指定数据库中所有表的名称和描述。这是探索数据库结构的第一步。")]
     public async Task<string> GetTableNamesAsync(
+        IServiceProvider sp,
         [Description("目标数据库的名称")] string databaseName)
     {
         try
         {
             // 获取数据库配置
-            var db = await GetDatabaseAsync(databaseName, CancellationToken.None);
+            var db = await GetDatabaseAsync(sp, databaseName, CancellationToken.None);
 
             // 根据数据库类型构建查询元数据的 SQL
             var sql = string.Empty;
@@ -148,6 +147,7 @@ public class DataAnalysisPlugin(
     
     [Description("获取指定表的详细结构定义(DDL)，包含列名、数据类型、主键和外键信息。")]
     public async Task<string> GetTableSchemaAsync(
+        IServiceProvider sp,
         [Description("目标数据库的名称")] string databaseName,
         [Description("需要查询的表名列表，如 'Orders, Customers'")] string[] tableNames)
     {
@@ -158,7 +158,7 @@ public class DataAnalysisPlugin(
 
         try
         {
-            var db = await GetDatabaseAsync(databaseName, CancellationToken.None);
+            var db = await GetDatabaseAsync(sp, databaseName, CancellationToken.None);
             var ddlBuilder = new StringBuilder();
 
             foreach (var tableName in tableNames)
@@ -203,6 +203,60 @@ public class DataAnalysisPlugin(
         {
             logger.LogError(ex, "获取表结构失败。Database: {DbName}", databaseName);
             return $"获取表结构时发生错误: {ex.Message}";
+        }
+    }
+    
+    [Description("在指定数据库上执行查询 SQL 语句，并返回 JSON 格式的结果。")]
+    public async Task<string> ExecuteSqlQueryAsync(
+        IServiceProvider sp,
+        [Description("目标数据库的名称")] string databaseName,
+        [Description("要执行的 SQL 查询语句 (仅限 SELECT，不需要人类可读，去除换行符)")] string sqlQuery)
+    {
+        // 1. 基础校验
+        if (string.IsNullOrWhiteSpace(sqlQuery)) return "错误：SQL 语句不能为空。";
+
+        try
+        {
+            var db = await GetDatabaseAsync(sp, databaseName, CancellationToken.None);
+
+            // 2. 执行查询
+            var data = await dbConnector.ExecuteQueryAsync(db, sqlQuery);
+
+            // 3. 结果处理策略
+            var dataList = data.ToList();
+            var rowCount = dataList.Count;
+            
+            // 没有数据
+            if (rowCount == 0)
+            {
+                return "查询执行成功，但未返回任何结果 (0 rows)。";
+            }
+
+            // 数据量过大保护
+            const int maxRowsReturn = 50; // 硬编码限制，最多返回 50 行
+            if (rowCount > maxRowsReturn)
+            {
+                // 仅取前 50 行
+                var truncatedList = dataList.Take(maxRowsReturn).ToList();
+
+                return $"查询成功。结果集过大 (共 {rowCount} 行)，已截断为前 {maxRowsReturn} 行以适应上下文。\nJSON结果: {truncatedList.ToJson()}";
+            }
+
+            // 正常返回
+            return dataList.ToJson();
+        }
+        catch (InvalidOperationException ex) // 捕获安全拦截异常
+        {
+            logger.LogWarning("SQL 执行被拦截: {Message}", ex.Message);
+            return $"安全警告: 查询被系统拒绝。原因: {ex.Message}";
+        }
+        catch (Exception ex)
+        {
+            // 这里是 ReAct 模式中“错误自愈”的关键！
+            // 我们必须返回详细的数据库错误信息（如 "Column 'xxx' not found"），
+            // 这样 Agent 才能看到错误 -> 思考原因 -> 修正 SQL -> 重试。
+            logger.LogError(ex, "SQL 执行异常");
+            return $"SQL 执行错误: {ex.Message}\n请检查你的 SQL 语法、表名或列名是否正确，并参考之前的 Schema 定义进行修正。";
         }
     }
 }

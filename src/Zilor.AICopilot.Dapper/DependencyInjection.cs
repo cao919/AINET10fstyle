@@ -13,6 +13,6 @@ public static class DependencyInjection
         builder.Services.AddSingleton<ISqlGuardrail, KeywordSqlGuardrail>();
         
         // 注册 数据库连接器
-        builder.Services.AddScoped<IDatabaseConnector, DapperDatabaseConnector>();
+        builder.Services.AddSingleton<IDatabaseConnector, DapperDatabaseConnector>();
     }
 }
