@@ -1,4 +1,5 @@
-﻿using Microsoft.Agents.AI;
+﻿using System.Threading.Tasks;
+using Microsoft.Agents.AI;
 using Zilor.AICopilot.AgentPlugin;
 using Zilor.AICopilot.AiGatewayService.Agents;
 using Zilor.AICopilot.DataAnalysisService;

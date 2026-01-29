@@ -1,6 +1,10 @@
-﻿using System.ClientModel;
+﻿using System;
+using System.ClientModel;
 using System.ClientModel.Primitives;
+using System.Linq;
 using System.Linq.Expressions;
+using System.Net.Http;
+using System.Threading.Tasks;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.DependencyInjection;

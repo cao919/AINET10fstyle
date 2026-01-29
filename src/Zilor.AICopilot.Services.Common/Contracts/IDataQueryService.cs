@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Zilor.AICopilot.Core.AiGateway.Aggregates.ConversationTemplate;
 using Zilor.AICopilot.Core.AiGateway.Aggregates.LanguageModel;
 using Zilor.AICopilot.Core.AiGateway.Aggregates.Sessions;
+using Zilor.AICopilot.Core.McpServer.Aggregates.McpServerInfo;
 using Zilor.AICopilot.Core.Rag.Aggregates.EmbeddingModel;
 using Zilor.AICopilot.Core.Rag.Aggregates.KnowledgeBase;
 
@@ -28,6 +29,8 @@ public interface IDataQueryService
     public IQueryable<DocumentChunk> DocumentChunks { get; }
     
     public IQueryable<BusinessDatabase> BusinessDatabases { get; }
+    
+    public IQueryable<McpServerInfo> McpServerInfos { get; }
 
     Task<T?> FirstOrDefaultAsync<T>(IQueryable<T> queryable) where T : class;
 

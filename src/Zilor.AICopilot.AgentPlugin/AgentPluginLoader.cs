@@ -54,6 +54,22 @@ public class AgentPluginLoader
     }
     
     /// <summary>
+    /// 动态注册一个 Agent 插件。
+    /// 该方法既支持注册原生插件，也支持注册 MCP 桥接插件。
+    /// </summary>
+    /// <param name="plugin">插件实例</param>
+    public void RegisterAgentPlugin(IAgentPlugin plugin)
+    {
+        // 1. 存储插件实例
+        _plugins[plugin.Name] = plugin;
+
+        // 2. 提取并缓存工具列表
+        // 这一步是为了优化性能，避免每次 Agent 询问工具时都去遍历插件
+        var tools = plugin.GetAITools()?.ToArray() ?? [];
+        _aiTools[plugin.Name] = tools;
+    }
+    
+    /// <summary>
     /// 核心功能：根据名称动态获取工具集。
     /// 支持一次获取多个插件的工具，实现工具的动态混搭。
     /// </summary>

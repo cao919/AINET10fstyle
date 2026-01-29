@@ -1,4 +1,7 @@
-﻿using MediatR;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using MediatR;
 using Zilor.AICopilot.AiGatewayService.Queries.ConversationTemplates;
 using Zilor.AICopilot.Core.AiGateway.Aggregates.Sessions;
 using Zilor.AICopilot.Services.Common.Attributes;
