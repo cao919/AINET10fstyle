@@ -1,15 +1,10 @@
-﻿using System.Threading.Tasks;
-using Microsoft.Agents.AI;
+﻿using Microsoft.Agents.AI;
 using Zilor.AICopilot.AgentPlugin;
-using Zilor.AICopilot.Core.DataAnalysis.Aggregates.BusinessDatabase;
+using Zilor.AICopilot.AiGatewayService.Agents;
 using Zilor.AICopilot.DataAnalysisService;
 using Zilor.AICopilot.DataAnalysisService.Plugins;
 
-namespace Zilor.AICopilot.AiGatewayService.Agents;
-
-public class DataAnalysisAgentBuilder(
-    ChatAgentFactory agentFactory,
-    AgentPluginLoader pluginLoader)
+public class DataAnalysisAgentBuilder(ChatAgentFactory agentFactory, AgentPluginLoader pluginLoader)
 {
     private const string TemplateName = "DataAnalysisAgent";
 

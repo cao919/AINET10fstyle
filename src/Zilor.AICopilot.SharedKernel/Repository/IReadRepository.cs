@@ -25,7 +25,7 @@ public interface IReadRepository<T> where T : class, IAggregateRoot
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task<T?> GetByIdAsync<TKey>(TKey id, CancellationToken cancellationToken = default);
-
+    
     /// <summary>
     ///     查询实体集合
     /// </summary>

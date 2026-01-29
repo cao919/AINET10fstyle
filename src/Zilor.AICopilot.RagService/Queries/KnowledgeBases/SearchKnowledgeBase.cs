@@ -4,19 +4,22 @@ using Zilor.AICopilot.Core.Rag.Aggregates.EmbeddingModel;
 using Zilor.AICopilot.Core.Rag.Aggregates.KnowledgeBase;
 using Zilor.AICopilot.Embedding;
 using Zilor.AICopilot.Embedding.Models;
+using Zilor.AICopilot.RagWorker.Models;
+using Zilor.AICopilot.Services.Common.Attributes;
 using Zilor.AICopilot.SharedKernel.Messaging;
 using Zilor.AICopilot.SharedKernel.Repository;
 using Zilor.AICopilot.SharedKernel.Result;
 
 namespace Zilor.AICopilot.RagService.Queries.KnowledgeBases;
 
+[AuthorizeRequirement("Rag.SearchKnowledgeBase")]
 public record SearchKnowledgeBaseQuery(
     Guid KnowledgeBaseId, 
     string QueryText, 
     int TopK = 3, 
     double MinScore = 0.5) 
     : IQuery<Result<List<SearchKnowledgeBaseResult>>>;
-
+    
 public class SearchKnowledgeBaseQueryHandler(
     IReadRepository<KnowledgeBase> kbRepo,
     IReadRepository<EmbeddingModel> embeddingModelRepo,

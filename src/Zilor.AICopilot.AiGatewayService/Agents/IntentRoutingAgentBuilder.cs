@@ -1,11 +1,9 @@
-﻿using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 using Microsoft.Agents.AI;
 using Zilor.AICopilot.AgentPlugin;
-using Zilor.AICopilot.AiGatewayService.Agents;
 using Zilor.AICopilot.Services.Common.Contracts;
 
+namespace Zilor.AICopilot.AiGatewayService.Agents;
 public class IntentRoutingAgentBuilder
 {
     private const string AgentName = "IntentRoutingAgent";
@@ -24,12 +22,10 @@ public class IntentRoutingAgentBuilder
         _agentFactory = agentFactory;
         _dataQueryService = dataQueryService;
 
-        // 添加系统内置意图
+        // 预构建工具意图列表（这些是代码硬编码的，运行时不会变，可以缓存）
         var sb = new StringBuilder();
         sb.AppendLine("- General.Chat: 闲聊、打招呼、情感交互或无法归类的问题。");
         
-        // 扫描插件系统，添加工具意图
-        // 这里我们假设每个 Plugin 对应一个大类意图，实际项目中可以做得更细致
         var allPlugins = pluginLoader.GetAllPlugin(); 
         foreach (var plugin in allPlugins)
         {
@@ -52,6 +48,7 @@ public class IntentRoutingAgentBuilder
         foreach (var kb in kbs)
         {
             // 格式：- Knowledge.{KbName}: {Description}
+            // 示例：- Knowledge.HrPolicy: 公司员工手册、报销制度和考勤规定。
             sb.AppendLine($"- Knowledge.{kb.Name}: {kb.Description}");
         }
 
@@ -99,7 +96,7 @@ public class IntentRoutingAgentBuilder
                 // 确保我们在 Prompt 模板中预留了 {{$IntentList}} 占位符
                 template.SystemPrompt = template.SystemPrompt
                     .Replace("{{$IntentList}}", intents.ToString());
-            });
+            }, isSaveChatMessage: false);
         
         return agent;
     }

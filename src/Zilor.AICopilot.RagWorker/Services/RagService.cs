@@ -5,11 +5,11 @@ using Zilor.AICopilot.Core.Rag.Aggregates.KnowledgeBase;
 using Zilor.AICopilot.Embedding;
 using Zilor.AICopilot.Embedding.Models;
 using Zilor.AICopilot.EntityFrameworkCore;
+using Zilor.AICopilot.RagWorker.Models;
 using Zilor.AICopilot.RagWorker.Services.Parsers;
 using Zilor.AICopilot.Services.Common.Contracts;
 
 namespace Zilor.AICopilot.RagWorker.Services;
-
 
 public class RagService(
     IFileStorageService fileStorage,
@@ -20,7 +20,7 @@ public class RagService(
     AiCopilotDbContext dbContext,
     ILogger<RagService> logger)
 {
-    public async Task IndexDocumentAsync(Document document, CancellationToken cancellationToken = new())
+    public async Task IndexDocumentAsync(Document document, CancellationToken cancellationToken = default)
     {
         logger.LogInformation("开始索引流程: {DocumentName}", document.Name);
 
@@ -30,17 +30,16 @@ public class RagService(
         // Step 2: 解析
         var text = await ParseDocumentAsync(document, stream, cancellationToken);
 
-        // Step 3: 分割
+        // Step 3: 切片
         var paragraphs = await SplitDocumentAsync(document, text, cancellationToken);
 
         // Step 4: 嵌入
         var (embeddings, dimensions) = await GenerateEmbeddingsAsync(document, paragraphs, cancellationToken);
 
-        // Step 5: 存储
+        // Step 5: 保存向量并完成索引
         await SaveVectorAsync(document, paragraphs, embeddings, dimensions, cancellationToken);
 
         logger.LogInformation("文档索引完成: {DocumentName}", document.Name);
-
     }
 
     // ================================================================
@@ -104,7 +103,7 @@ public class RagService(
 
         return paragraphs;
     }
-    
+
     // ================================================================
     // Step 4: 嵌入
     // ================================================================
@@ -167,7 +166,7 @@ public class RagService(
 
         return (allEmbeddings, dimensions);
     }
-    
+
     // ================================================================
     // Step 5: 保存向量
     // ================================================================
@@ -195,10 +194,10 @@ public class RagService(
         // 使用 "kb-" 前缀加上知识库 ID (Guid) 作为集合名，确保名称符合 Qdrant 规范且唯一
         var collectionName = $"kb-{document.KnowledgeBaseId:N}";
         logger.LogInformation("文档 {DocumentName} 将存入集合: {CollectionName}", document.Name, collectionName);
-
-        // 3. 动态获取集合实例
+        
+        // 3. 获取动态集合
         var definition = VectorDocumentDefinition.Get(dimensions);
-        var collection = vectorStoreClient.GetDynamicCollection(collectionName, definition);
+        var collection = vectorStoreClient.GetCollection<ulong, VectorDocumentRecord>(collectionName, definition);
 
         // 4. 确保集合存在
         // 第一次向该知识库上传文档时，会自动创建集合
@@ -212,14 +211,25 @@ public class RagService(
                 // 生成一个唯一的记录键值
                 var recordKey = (ulong)document.Id.GetHashCode() << 32 | (uint)i;
 
-                await collection.UpsertAsync(new Dictionary<string, object?>
+                // await collection.UpsertAsync(new Dictionary<string, object?>
+                // {
+                //     { "Key", recordKey },
+                //     { "Text", chunks[i] },
+                //     { "DocumentId", document.Id.ToString() },
+                //     { "KnowledgeBaseId", document.KnowledgeBaseId.ToString() },
+                //     { "ChunkIndex", i },
+                //     { "Embedding", embeddings[i].Vector }
+                // }, ct);
+
+                await collection.UpsertAsync(new VectorDocumentRecord()
                 {
-                    { "Key", recordKey },
-                    { "Text", chunks[i] },
-                    { "DocumentId", document.Id.ToString() },
-                    { "KnowledgeBaseId", document.KnowledgeBaseId.ToString() },
-                    { "ChunkIndex", i },
-                    { "Embedding", embeddings[i].Vector }
+                    Key = recordKey,
+                    Text = chunks[i],
+                    DocumentId = document.Id.ToString(),
+                    DocumentName = document.Name,
+                    KnowledgeBaseId = document.KnowledgeBaseId.ToString(),
+                    ChunkIndex = i,
+                    Embedding = embeddings[i].Vector
                 }, ct);
             }
 
@@ -234,5 +244,4 @@ public class RagService(
         document.MarkAsIndexed();
         await dbContext.SaveChangesAsync(ct);
     }
-
 }

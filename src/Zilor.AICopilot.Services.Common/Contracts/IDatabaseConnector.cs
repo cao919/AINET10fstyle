@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Data;
-using System.Threading;
-using System.Threading.Tasks;
-using Zilor.AICopilot.Core.DataAnalysis.Aggregates.BusinessDatabase;
+﻿using System.Data;
 
 namespace Zilor.AICopilot.Services.Common.Contracts;
 

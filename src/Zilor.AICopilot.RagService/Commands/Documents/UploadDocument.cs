@@ -10,7 +10,6 @@ using Zilor.AICopilot.SharedKernel.Result;
 
 namespace Zilor.AICopilot.RagService.Commands.Documents;
 
-
 public record UploadDocumentDto(int Id, string Status);
 
 public record FileUploadStream(string FileName, Stream Stream);

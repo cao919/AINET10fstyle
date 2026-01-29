@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Text;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Agents.AI;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Agents.AI.Workflows.Reflection;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
 using Zilor.AICopilot.AiGatewayService.Agents;
-using Zilor.AICopilot.AiGatewayService.Models;
-using Zilor.AICopilot.DataAnalysisService;
+using Zilor.AICopilot.DataAnalysisService.Plugins;
+using Zilor.AICopilot.DataAnalysisService.Services;
 using Zilor.AICopilot.Services.Common.Contracts;
 using Zilor.AICopilot.Services.Common.Helper;
 using Zilor.AICopilot.Visualization;
@@ -26,11 +21,11 @@ namespace Zilor.AICopilot.AiGatewayService.Workflows;
 /// </summary>
 public class DataAnalysisExecutor(
     DataAnalysisAgentBuilder agentBuilder,
-    VisualizationContext vizContext,
     IDataQueryService dataQuery,
+    VisualizationContext vizContext,
     ILogger<DataAnalysisExecutor> logger)
     : ReflectingExecutor<DataAnalysisExecutor>("DataAnalysisExecutor"),
-        IMessageHandler<List<IntentResult>, BranchResult>
+      IMessageHandler<List<IntentResult>, BranchResult>
 {
     private const string AnalysisIntentPrefix = "Analysis.";
 
@@ -64,17 +59,17 @@ public class DataAnalysisExecutor(
 
         return BranchResult.FromDataAnalysis(output.ToString());
     }
-
+    
     /// <summary>
     /// 处理单个数据库查询意图
     /// </summary>
     private async Task<string> ProcessSingleIntentAsync(
-        IntentResult intent,
+        IntentResult intent, 
         IWorkflowContext context,
         CancellationToken ct)
     {
         var dbName = intent.Intent.Substring(AnalysisIntentPrefix.Length);
-
+        
         try
         {
             // 1. 获取数据库配置
@@ -93,25 +88,22 @@ public class DataAnalysisExecutor(
             var agent = await agentBuilder.BuildAsync(db);
             // 创建临时会话线程
             var thread = agent.GetNewThread();
-
+            
             // 4. 执行 ReAct 循环
             // Agent 会自动进行: 思考 -> GetTableNames -> 思考 -> GetTableSchema -> 思考 -> ExecuteSQL -> 总结
             await foreach (var update in agent.RunStreamingAsync(intent.Query!, thread, cancellationToken: ct))
             {
+                
                 await context.AddEventAsync(new AgentRunUpdateEvent(Id, update), ct);
             }
-
+            
             // 记录日志以便调试
             logger.LogInformation("数据库 {DbName} 查询完成。", dbName);
-
-            // 获取最后一条 Agent 回复消息（最终数据）
-            var messages = thread.GetService<IList<ChatMessage>>()!;
-            var response = messages.Last();
-            var output = JsonSerializer.Deserialize<DataAnalysisAgentOutputDto>(response.Text);
             
             // 获取可视化上下文
             var (rawData, schema) = vizContext.GetLastResult();
-
+            var output = vizContext.GetOutput();
+            
             // =========================================================
             // 分流路径 1：旁路输出 (Side Path) -> 前端 Widget
             // 目标：visual_decision + data -> Widget JSON
@@ -130,12 +122,12 @@ public class DataAnalysisExecutor(
                     return $"[系统错误]: 构建可视化 Widget 时发生异常 - {ex.Message}";
                 }
             }
-
+           
             // =========================================================
             // 分流路径 2：主路输出 (Main Path) -> 聚合器 -> Final Agent
             // 目标：schema + data -> Combined JSON
             // =========================================================
-
+        
             // 这里直接使用匿名对象进行拼接：
             // { "schema": [], "data": [] }
             var combinedOutput = new
@@ -143,6 +135,7 @@ public class DataAnalysisExecutor(
                 analysis = output.Analysis,         // 直接透传 Agent 生成的 Schema
                 data = rawData ?? []              // 拼接 SQL 查询的实际结果
             };
+            
 
             return combinedOutput.ToJson();
         }
@@ -161,7 +154,7 @@ public class DataAnalysisExecutor(
                 // 取第一行第一列，或者根据列名查找
                 var firstRow = data.First() as IDictionary<string, object>;
                 var value = firstRow.Values.First(); // 简单粗暴取第一个值
-
+            
                 return new StatsCardWidget
                 {
                     Title = decision.Title,
@@ -178,7 +171,6 @@ public class DataAnalysisExecutor(
                 return new DataTableWidget
                 {
                     Title = decision.Title,
-                    Description = decision.Description,
                     Data = data.ToDataTableData(schema)
                 };
 
@@ -187,7 +179,6 @@ public class DataAnalysisExecutor(
                 return new ChartWidget
                 {
                     Title = decision.Title,
-                    Description = decision.Description,
                     Data = new ChartData
                     {
                         Category = decision.ChartConfig!.Category,
@@ -207,4 +198,5 @@ public class DataAnalysisExecutor(
                 throw new NotSupportedException($"不支持的 Widget 类型: {decision.Type}");
         }
     }
+    
 }

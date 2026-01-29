@@ -30,6 +30,7 @@ public static class DependencyInjection
         });
         
         builder.Services.AddScoped<IntentRoutingAgentBuilder>();
+        
         builder.Services.AddScoped<DataAnalysisAgentBuilder>();
         
         builder.AddIntentWorkflow();

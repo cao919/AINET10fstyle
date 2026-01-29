@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Zilor.AICopilot.Core.DataAnalysis.Aggregates.BusinessDatabase;
 
 namespace Zilor.AICopilot.EntityFrameworkCore.Configuration.DataAnalysis;
 

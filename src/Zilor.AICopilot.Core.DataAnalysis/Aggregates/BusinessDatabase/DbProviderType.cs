@@ -16,7 +16,7 @@ public enum DbProviderType
     SqlServer = 2,
 
     /// <summary>
-    /// MySQL
+    /// MySQL (预留)
     /// </summary>
     MySql = 3
 }

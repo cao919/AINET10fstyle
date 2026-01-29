@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Agents.AI.Workflows;
+﻿using Microsoft.Agents.AI.Workflows;
 using Microsoft.Agents.AI.Workflows.Reflection;
 using Microsoft.Extensions.Logging;
 using Zilor.AICopilot.AiGatewayService.Agents;
@@ -32,7 +28,7 @@ public class ContextAggregatorExecutor(ILogger<ContextAggregatorExecutor> logger
         // 1. 累积状态
         // 注意：FanInEdge 可能一次性送来所有结果，也可能分批送来
         // 因此我们需要 AddRange 并检查总数
-        _accumulatedResults.Add(branchResult);
+        _accumulatedResults.AddRange(branchResult);
 
         // 2. 完备性检查
         if (_accumulatedResults.Count >= ExpectedBranchCount)

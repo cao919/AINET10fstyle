@@ -28,8 +28,8 @@ public class KeywordSqlGuardrail : ISqlGuardrail
         foreach (var keyword in ForbiddenKeywords)
         {
             // 使用单词边界匹配，避免误杀 (例如: "SELECT * FROM UPDATE_LOG" 不应被拦截)
-            // \b{keyword}\b 确保匹配的是完整的单词
             var regex = new Regex($@"\b{keyword}\b", RegexOptions.IgnoreCase);
+            // \b{keyword}\b 确保匹配的是完整的单词
             if (regex.IsMatch(cleanSql))
             {
                 return (false, $"安全拦截：检测到禁止的关键字 '{keyword}'。Agent 仅允许执行查询操作。");

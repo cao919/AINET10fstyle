@@ -1,6 +1,5 @@
-﻿using Zilor.AICopilot.SharedKernel.Domain;
-
-namespace Zilor.AICopilot.Core.DataAnalysis.Aggregates.BusinessDatabase;
+﻿using Zilor.AICopilot.Core.DataAnalysis.Aggregates.BusinessDatabase;
+using Zilor.AICopilot.SharedKernel.Domain;
 
 /// <summary>
 /// 业务数据库聚合根

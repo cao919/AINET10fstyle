@@ -1,7 +1,7 @@
-﻿
+﻿using Zilor.AICopilot.DataAnalysisService.Plugins;
 using Zilor.AICopilot.Visualization;
 
-namespace Zilor.AICopilot.DataAnalysisService;
+namespace Zilor.AICopilot.DataAnalysisService.Services;
 
 /// <summary>
 /// 可视化上下文
@@ -12,9 +12,12 @@ public class VisualizationContext
 {
     // 存储最后一次查询的数据行（动态类型）
     private IEnumerable<dynamic>? _lastResultSet;
-
+    
     // 存储最后一次查询的 Schema 信息（列名、类型等）
     private IEnumerable<SchemaColumn>? _lastResultSchema;
+
+    // 存储数据分析输出结果
+    private DataAnalysisOutputDto _outputDto = new ();
 
     /// <summary>
     /// 捕获查询结果
@@ -24,6 +27,15 @@ public class VisualizationContext
         _lastResultSet = resultSet;
         _lastResultSchema = schema;
     }
+    
+    /// <summary>
+    /// 捕获输出结果
+    /// </summary>
+    public void CaptureOutput(AnalysisDto? analysis, VisualDecisionDto? decision)
+    {
+        _outputDto.Analysis = analysis;
+        _outputDto.Decision = decision;
+    }
 
     /// <summary>
     /// 获取暂存的数据集
@@ -32,9 +44,18 @@ public class VisualizationContext
     {
         return (_lastResultSet, _lastResultSchema);
     }
+    
+    /// <summary>
+    /// 获取输出结果
+    /// </summary>
+    public DataAnalysisOutputDto GetOutput()
+    {
+        return _outputDto;
+    }
 
     /// <summary>
     /// 检查是否包含有效数据
     /// </summary>
     public bool HasData => _lastResultSet != null && _lastResultSet.Any();
 }
+

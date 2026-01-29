@@ -24,9 +24,6 @@ public record VisualDecisionDto
 
     [JsonPropertyName("title")]
     public string Title { get; set; } = string.Empty;
-    
-    [JsonPropertyName("description")]
-    public string Description { get; set; } = string.Empty;
 
     [JsonPropertyName("chart_config")]
     public ChartConfig? ChartConfig { get; set; }

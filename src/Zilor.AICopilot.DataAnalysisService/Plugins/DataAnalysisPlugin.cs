@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Zilor.AICopilot.AgentPlugin;
 using Zilor.AICopilot.Core.DataAnalysis.Aggregates.BusinessDatabase;
+using Zilor.AICopilot.DataAnalysisService.Services;
 using Zilor.AICopilot.Services.Common.Contracts;
 using Zilor.AICopilot.Services.Common.Helper;
 using Zilor.AICopilot.Visualization;
@@ -19,16 +20,12 @@ public record ColumnMetadata
     public string? Description { get; set; }
 }
 
-/// <summary>
-/// 数据分析插件
-/// 提供数据库元数据探索和SQL执行能力，是Text-to-SQL的核心组件。
-/// </summary>
 public class DataAnalysisPlugin(
     IDatabaseConnector dbConnector,
     ILogger<DataAnalysisPlugin> logger) : AgentPluginBase
 {
     public override string Description => "提供数据库结构查询和SQL执行能力，用于回答涉及业务数据的统计分析问题。";
-
+    
     // 辅助方法：根据名称获取数据库配置
     // 这个方法不暴露给 AI，仅供内部使用
     private async Task<BusinessDatabase> GetDatabaseAsync(IServiceProvider sp, string databaseName, CancellationToken ct)
@@ -49,7 +46,7 @@ public class DataAnalysisPlugin(
 
         return db;
     }
-    
+
     [Description("获取指定数据库中所有表的名称和描述。这是探索数据库结构的第一步。")]
     public async Task<string> GetTableNamesAsync(
         IServiceProvider sp,
@@ -67,13 +64,13 @@ public class DataAnalysisPlugin(
                 case DbProviderType.PostgreSql:
                     // PostgreSQL: 从 information_schema 获取表名，关联 pg_description 获取注释
                     sql = @"
-                        SELECT 
-                            t.table_name AS ""TableName"",
-                            obj_description(pgc.oid) AS ""Description""
-                        FROM information_schema.tables t
-                        INNER JOIN pg_class pgc ON t.table_name = pgc.relname
-                        WHERE t.table_schema = 'public' 
-                          AND t.table_type = 'BASE TABLE';";
+                            SELECT 
+                                t.table_name AS ""TableName"",
+                                obj_description(pgc.oid) AS ""Description""
+                            FROM information_schema.tables t
+                            INNER JOIN pg_class pgc ON t.table_name = pgc.relname
+                            WHERE t.table_schema = 'public' 
+                              AND t.table_type = 'BASE TABLE';";
                     break;
                 case DbProviderType.SqlServer:
                     // SQL Server
@@ -95,57 +92,7 @@ public class DataAnalysisPlugin(
             return $"获取表名时发生错误: {ex.Message}";
         }
     }
-    
-    
-    // 内部辅助方法：查询单个表的列元数据
-    private async Task<List<ColumnMetadata>> GetColumnsAsync(BusinessDatabase db, string tableName)
-    {
-        var sql = string.Empty;
-        switch (db.Provider)
-        {
-            case DbProviderType.PostgreSql:
-                // PostgreSQL 元数据查询
-                // 包含列名、类型、是否主键
-                // 注意：此处简化了查询，实际生产中可能需要更复杂的关联来获取外键
-                sql = @"
-            SELECT 
-                c.column_name AS ""ColumnName"",
-                c.data_type AS ""DataType"",
-                CASE WHEN tc.constraint_type = 'PRIMARY KEY' THEN 1 ELSE 0 END AS ""IsPrimaryKey"",
-                pg_catalog.col_description(format('%s.%s', c.table_schema, c.table_name)::regclass::oid, c.ordinal_position) AS ""Description""
-            FROM information_schema.columns c
-            LEFT JOIN information_schema.key_column_usage kcu 
-                ON c.table_name = kcu.table_name AND c.column_name = kcu.column_name
-            LEFT JOIN information_schema.table_constraints tc 
-                ON kcu.constraint_name = tc.constraint_name AND tc.constraint_type = 'PRIMARY KEY'
-            WHERE c.table_name = @TableName AND c.table_schema = 'public';";
-                break;
-            case DbProviderType.SqlServer:
-                // SQL Server 元数据查询
-                break;
-            default:
-                return [];
-        }
 
-        var result = await dbConnector.ExecuteQueryAsync(db, sql, new { TableName = tableName });
-
-        // Dapper 返回的是 dynamic，需要手动映射到强类型
-        var columns = new List<ColumnMetadata>();
-        foreach (var row in result)
-        {
-            var dict = (IDictionary<string, object>)row;
-            columns.Add(new ColumnMetadata
-            {
-                ColumnName = dict["ColumnName"] as string ?? "",
-                DataType = dict["DataType"] as string ?? "",
-                IsPrimaryKey = Convert.ToInt32(dict["IsPrimaryKey"]) == 1,
-                Description = dict["Description"] as string ?? ""
-            });
-        }
-
-        return columns;
-    }
-    
     [Description("获取指定表的详细结构定义(DDL)，包含列名、数据类型、主键和外键信息。")]
     public async Task<string> GetTableSchemaAsync(
         IServiceProvider sp,
@@ -206,7 +153,56 @@ public class DataAnalysisPlugin(
             return $"获取表结构时发生错误: {ex.Message}";
         }
     }
-    
+
+    // 内部辅助方法：查询单个表的列元数据
+    private async Task<List<ColumnMetadata>> GetColumnsAsync(BusinessDatabase db, string tableName)
+    {
+        var sql = string.Empty;
+        switch (db.Provider)
+        {
+            case DbProviderType.PostgreSql:
+                // PostgreSQL 元数据查询
+                // 包含列名、类型、是否主键
+                // 注意：此处简化了查询，实际生产中可能需要更复杂的关联来获取外键
+                sql = @"
+                SELECT 
+                    c.column_name AS ""ColumnName"",
+                    c.data_type AS ""DataType"",
+                    CASE WHEN tc.constraint_type = 'PRIMARY KEY' THEN 1 ELSE 0 END AS ""IsPrimaryKey"",
+                    pg_catalog.col_description(format('%s.%s', c.table_schema, c.table_name)::regclass::oid, c.ordinal_position) AS ""Description""
+                FROM information_schema.columns c
+                LEFT JOIN information_schema.key_column_usage kcu 
+                    ON c.table_name = kcu.table_name AND c.column_name = kcu.column_name
+                LEFT JOIN information_schema.table_constraints tc 
+                    ON kcu.constraint_name = tc.constraint_name AND tc.constraint_type = 'PRIMARY KEY'
+                WHERE c.table_name = @TableName AND c.table_schema = 'public';";
+                break;
+            case DbProviderType.SqlServer:
+                // SQL Server 元数据查询
+                break;
+            default:
+                return [];
+        }
+        
+        var result = await dbConnector.ExecuteQueryAsync(db, sql, new { TableName = tableName });
+
+        // Dapper 返回的是 dynamic，需要手动映射到强类型
+        var columns = new List<ColumnMetadata>();
+        foreach (var row in result)
+        {
+            var dict = (IDictionary<string, object>)row;
+            columns.Add(new ColumnMetadata
+            {
+                ColumnName = dict["ColumnName"] as string ?? "",
+                DataType = dict["DataType"] as string ?? "",
+                IsPrimaryKey = Convert.ToInt32(dict["IsPrimaryKey"]) == 1,
+                Description = dict["Description"] as string ?? ""
+            });
+        }
+
+        return columns;
+    }
+
     [Description("在指定数据库上执行查询 SQL 语句，并返回 JSON 格式的结果。")]
     public async Task<string> ExecuteSqlQueryAsync(
         IServiceProvider sp,
@@ -235,8 +231,7 @@ public class DataAnalysisPlugin(
                     schema.Add(new SchemaColumn(kvp.Key, type));
                 }
             }
-
-            // 3. 【关键步骤】将原始结果捕获到上下文中
+            // 3.【关键步骤】将原始结果捕获到上下文中
             var vizContext = sp.GetRequiredService<VisualizationContext>();
             vizContext.CaptureResult(data, schema);
             
@@ -259,5 +254,18 @@ public class DataAnalysisPlugin(
             logger.LogError(ex, "SQL 执行异常");
             return $"SQL 执行错误: {ex.Message}\n请检查你的 SQL 语法、表名或列名是否正确，并参考之前的 Schema 定义进行修正。";
         }
+    }
+
+    [Description("输出数据分析结果和可视化决策结果")]
+    public string OutputResult(IServiceProvider sp,
+        [Description("数据分析结果，如果查询数据失败，此字段可以 null")]
+        AnalysisDto? analysis,
+        [Description("可视化决策结果，参考【可视化输出规范决策指南】，如果数据不适合可视化，此字段可为 null")]
+        VisualDecisionDto? decision)
+    {
+        // 将输出结果捕获到上下文中
+        var vizContext = sp.GetRequiredService<VisualizationContext>();
+        vizContext.CaptureOutput(analysis, decision);
+        return "已成功获取输出结果，请直接回复‘数据查询分析任务完成，结果如下：’";
     }
 }

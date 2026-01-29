@@ -1,5 +1,6 @@
 ﻿using System.Text.Json.Serialization;
-using Zilor.AICopilot.Visualization.Widgets;
+
+namespace Zilor.AICopilot.Visualization.Widgets;
 
 /// <summary>
 /// 可视化组件类型的枚举定义
@@ -32,7 +33,7 @@ public interface IWidget
 /// <summary>
 /// 可视化组件基类
 /// </summary>
-[JsonPolymorphic(TypeDiscriminatorPropertyName = "widget_type")]
+[JsonPolymorphic(TypeDiscriminatorPropertyName = "type")]
 [JsonDerivedType(typeof(StatsCardWidget), typeDiscriminator: nameof(WidgetType.StatsCard))]
 [JsonDerivedType(typeof(DataTableWidget), typeDiscriminator: nameof(WidgetType.DataTable))]
 [JsonDerivedType(typeof(ChartWidget), typeDiscriminator: nameof(WidgetType.Chart))]

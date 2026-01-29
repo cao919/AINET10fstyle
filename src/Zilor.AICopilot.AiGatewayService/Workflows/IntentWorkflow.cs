@@ -12,15 +12,14 @@ public static class IntentWorkflow
         builder.Services.AddTransient<IntentRoutingExecutor>();
         builder.Services.AddTransient<ToolsPackExecutor>();
         builder.Services.AddTransient<KnowledgeRetrievalExecutor>();
-        builder.Services.AddTransient<ContextAggregatorExecutor>();
         builder.Services.AddTransient<DataAnalysisExecutor>();
+        builder.Services.AddTransient<ContextAggregatorExecutor>();
         builder.Services.AddTransient<FinalProcessExecutor>();
         
         builder.AddWorkflow(nameof(IntentWorkflow), (sp, key) =>
         {
             var scopeFactory = sp.GetRequiredService<IServiceScopeFactory>();
             var scope = scopeFactory.CreateScope();
-            
             var intentRouting = scope.ServiceProvider.GetRequiredService<IntentRoutingExecutor>();
             var toolsPack = scope.ServiceProvider.GetRequiredService<ToolsPackExecutor>();
             var knowledgeRetrieval = scope.ServiceProvider.GetRequiredService<KnowledgeRetrievalExecutor>();

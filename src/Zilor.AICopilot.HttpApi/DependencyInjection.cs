@@ -18,11 +18,6 @@ namespace Zilor.AICopilot.HttpApi;
 
 public static class DependencyInjection
 {
-    public static void ConfigAgentOpenTelemetry()
-    {
-
-    }
-    
     extension(IHostApplicationBuilder builder)
     {
         public void AddApplicationService()
@@ -37,8 +32,10 @@ public static class DependencyInjection
             });
             
             builder.AddAiGatewayService();
-            builder.AddRagService();
+            
             builder.AddDataAnalysisService();
+            
+            builder.AddRagService();
         }
 
         public void AddWebServices()

@@ -16,7 +16,7 @@ public class AgentPluginLoader
     
     // 构造函数注入所有的注册器
     public AgentPluginLoader(
-        IEnumerable<IAgentPluginRegistrar> registrars,
+        IEnumerable<IAgentPluginRegistrar> registrars, 
         IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
@@ -44,7 +44,7 @@ public class AgentPluginLoader
 
         foreach (var type in pluginTypes)
         {
-            // 创建实例
+            // 通过依赖注入容器创建实例
             var plugin = (IAgentPlugin)ActivatorUtilities.CreateInstance(_serviceProvider, type);
             
             // 存入缓存

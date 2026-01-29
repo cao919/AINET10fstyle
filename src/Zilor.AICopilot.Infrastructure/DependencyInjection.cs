@@ -13,7 +13,7 @@ public static class DependencyInjection
     public static void AddInfrastructures(this IHostApplicationBuilder builder)
     {
         builder.AddEfCore();
-        builder.Services.AddSingleton<IFileStorageService, LocalFileStorageService>();
         builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
-    }
+        builder.Services.AddSingleton<IFileStorageService, LocalFileStorageService>();
+    }   
 }

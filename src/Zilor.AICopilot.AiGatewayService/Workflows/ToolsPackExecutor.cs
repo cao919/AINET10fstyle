@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Agents.AI.Workflows;
+﻿using Microsoft.Agents.AI.Workflows;
 using Microsoft.Agents.AI.Workflows.Reflection;
 using Microsoft.Extensions.Logging;
 using Zilor.AICopilot.AgentPlugin;
@@ -13,15 +8,13 @@ namespace Zilor.AICopilot.AiGatewayService.Workflows;
 
 public class ToolsPackExecutor(
     AgentPluginLoader pluginLoader,
-    ILogger<ToolsPackExecutor> logger) :
+    ILogger<ToolsPackExecutor> logger):
     ReflectingExecutor<ToolsPackExecutor>("ToolsPackExecutor"),
     IMessageHandler<List<IntentResult>, BranchResult>
 {
     private const string ActionIntentPrefix = "Action.";
-
-    public async ValueTask<BranchResult> HandleAsync(
-        List<IntentResult> intentResults, 
-        IWorkflowContext context,
+    
+    public async ValueTask<BranchResult> HandleAsync(List<IntentResult> intentResults, IWorkflowContext context,
         CancellationToken cancellationToken = default)
     {
         try
@@ -32,22 +25,22 @@ public class ToolsPackExecutor(
                 .Where(i => i.Intent.StartsWith(ActionIntentPrefix, StringComparison.OrdinalIgnoreCase) 
                             && i.Confidence > 0.8) // 工具调用的风险较高，阈值设为 0.8 更安全
                 .ToList();
-
+            
             if (actionIntents.Count == 0)
             {
-                // 在并行流中，没有工具意图是常态，直接返回空数组即可
+                // 在并行流中，没有工具意图直接返回空数组即可
                 return BranchResult.FromTools([]);
             }
 
             logger.LogInformation("命中工具意图: {Intents}", string.Join(", ", actionIntents.Select(i => i.Intent)));
-
+            
             // 2. 提取插件名称
             // 格式：Action.{PluginName} -> {PluginName}
             var pluginNames = actionIntents
                 .Select(i => i.Intent.Substring(ActionIntentPrefix.Length))
                 .Distinct()
                 .ToArray();
-
+            
             // 3. 动态加载工具
             // 利用 AgentPluginLoader 的能力，一次性获取所有相关插件的工具定义
             var tools = pluginLoader.GetAITools(pluginNames);

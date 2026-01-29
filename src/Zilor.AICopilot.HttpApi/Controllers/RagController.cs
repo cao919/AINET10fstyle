@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Zilor.AICopilot.HttpApi.Infrastructure;
 using Zilor.AICopilot.RagService.Commands.Documents;
+using Zilor.AICopilot.RagService.Commands.KnowledgeBases;
 using Zilor.AICopilot.RagService.Queries.KnowledgeBases;
-using Zilor.AICopilot.Services.Common;
 
 namespace Zilor.AICopilot.HttpApi.Controllers;
 

@@ -74,7 +74,7 @@ public class Worker(
                 Console.WriteLine("创建管理员失败：" + string.Join(",", result.Errors.Select(e => e.Description)));
         }
 
-        // 创建默认模型
+        // 创建默认语言模型
         if (!await dbContext.LanguageModels.AnyAsync(cancellationToken: cancellationToken))
         {
             await dbContext.LanguageModels.AddRangeAsync(AiGatewayData.LanguageModels(), cancellationToken);
@@ -91,7 +91,7 @@ public class Worker(
         {
             await dbContext.EmbeddingModels.AddRangeAsync(RagData.EmbeddingModels(), cancellationToken);
         }
-
+        
         // 创建默认知识库
         if (!await dbContext.KnowledgeBases.AnyAsync(cancellationToken: cancellationToken))
         {
