@@ -19,6 +19,7 @@ public enum ChunkType
 {
     Error,
     Text,
+    Widget,
     FunctionCall,
     FunctionResult
 }
@@ -49,18 +50,22 @@ public class ChatStreamHandler(
                     yield return new ChatChunk(evt.ExecutorId, ChunkType.Error, evt.Data.Message);
                     break;
                 case AgentRunResponseEvent evt:
-                    var evtText = evt.Response.Text;
-                    if (evt.ExecutorId == nameof(IntentRoutingExecutor))
-                    {
-                        evtText = $"""
-                                   
-                                   ```json
-                                   {evt.Response.Text}
-                                   ```
+                    var evtText = $"""
 
-                                   """;
+                               ```json
+                               {evt.Response.Text}
+                               ```
+
+                               """;
+                    switch (evt.ExecutorId)
+                    {
+                        case "IntentRoutingExecutor":
+                            yield return new ChatChunk(evt.ExecutorId, ChunkType.Text, evtText);
+                            break;
+                        case "DataAnalysisExecutor":
+                            yield return new ChatChunk(evt.ExecutorId, ChunkType.Widget, evtText);
+                            break;
                     }
-                    yield return new ChatChunk(evt.ExecutorId, ChunkType.Text, evtText);
                     break;
                 case AgentRunUpdateEvent evt:
                     foreach (var evtContent in evt.Update.Contents)

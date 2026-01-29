@@ -52,6 +52,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zilor.AICopilot.Dapper", "s
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zilor.AICopilot.DataAnalysisService", "src\Zilor.AICopilot.DataAnalysisService\Zilor.AICopilot.DataAnalysisService.csproj", "{795475F4-A2A8-4144-A286-FD27AAC6F74A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zilor.AICopilot.Visualization", "src\Zilor.AICopilot.Visualization\Zilor.AICopilot.Visualization.csproj", "{E3149693-6348-4109-8FF6-CE48426DCDE8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -83,6 +85,7 @@ Global
 		{91E0F268-9632-403B-B033-404DC3DDF6E8} = {50F4E192-9CFA-4E59-AF90-B3E6043B1C44}
 		{E55C600D-1CEF-4D68-BD38-54F745F94B3E} = {AA58CFB8-FDE3-4BAC-BA9B-D060D85348E0}
 		{795475F4-A2A8-4144-A286-FD27AAC6F74A} = {B1FD4B1B-84C6-48E6-9522-0E567C589A5F}
+		{E3149693-6348-4109-8FF6-CE48426DCDE8} = {515F3AD7-B6CF-4F15-B7A2-45FE78B79510}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{928FA5D9-DEE1-4B92-94F7-D4171D1D7C97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -165,5 +168,9 @@ Global
 		{795475F4-A2A8-4144-A286-FD27AAC6F74A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{795475F4-A2A8-4144-A286-FD27AAC6F74A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{795475F4-A2A8-4144-A286-FD27AAC6F74A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3149693-6348-4109-8FF6-CE48426DCDE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3149693-6348-4109-8FF6-CE48426DCDE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3149693-6348-4109-8FF6-CE48426DCDE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3149693-6348-4109-8FF6-CE48426DCDE8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

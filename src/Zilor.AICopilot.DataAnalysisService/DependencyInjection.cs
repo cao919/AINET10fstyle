@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Zilor.AICopilot.AgentPlugin;
 using Zilor.AICopilot.Dapper;
@@ -11,6 +12,7 @@ public static class DependencyInjection
     {
         // 注册 Dapper 基础服务
         builder.AddDapper();
+        builder.Services.AddScoped<VisualizationContext>();
         // 注册插件加载器
         builder.Services.AddAgentPlugin(registrar =>
         {

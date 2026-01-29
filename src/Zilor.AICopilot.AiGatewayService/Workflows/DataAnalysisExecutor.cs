@@ -2,14 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Agents.AI;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Agents.AI.Workflows.Reflection;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
 using Zilor.AICopilot.AiGatewayService.Agents;
+using Zilor.AICopilot.AiGatewayService.Models;
+using Zilor.AICopilot.DataAnalysisService;
 using Zilor.AICopilot.Services.Common.Contracts;
+using Zilor.AICopilot.Services.Common.Helper;
+using Zilor.AICopilot.Visualization;
+using Zilor.AICopilot.Visualization.Widgets;
 
 namespace Zilor.AICopilot.AiGatewayService.Workflows;
 
@@ -19,6 +26,7 @@ namespace Zilor.AICopilot.AiGatewayService.Workflows;
 /// </summary>
 public class DataAnalysisExecutor(
     DataAnalysisAgentBuilder agentBuilder,
+    VisualizationContext vizContext,
     IDataQueryService dataQuery,
     ILogger<DataAnalysisExecutor> logger)
     : ReflectingExecutor<DataAnalysisExecutor>("DataAnalysisExecutor"),
@@ -98,13 +106,105 @@ public class DataAnalysisExecutor(
 
             // 获取最后一条 Agent 回复消息（最终数据）
             var messages = thread.GetService<IList<ChatMessage>>()!;
-            var output = messages.LastOrDefault(message => message.Role == ChatRole.Assistant);
-            return output != null ? output.Text : "[系统错误]: 无法获取查询结果。";
+            var response = messages.Last();
+            var output = JsonSerializer.Deserialize<DataAnalysisAgentOutputDto>(response.Text);
+            
+            // 获取可视化上下文
+            var (rawData, schema) = vizContext.GetLastResult();
+
+            // =========================================================
+            // 分流路径 1：旁路输出 (Side Path) -> 前端 Widget
+            // 目标：visual_decision + data -> Widget JSON
+            // =========================================================
+            if (output is { Decision: not null } && vizContext.HasData)
+            {
+                try
+                {
+                    var widget = BuildWidget(output.Decision, rawData!, schema!);
+                    var message = new ChatMessage(ChatRole.Assistant, widget.ToJson());
+                    await context.AddEventAsync(new AgentRunResponseEvent(Id, new AgentRunResponse(message)), ct);
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "构建可视化 Widget 失败。Database: {DbName}", dbName);
+                    return $"[系统错误]: 构建可视化 Widget 时发生异常 - {ex.Message}";
+                }
+            }
+
+            // =========================================================
+            // 分流路径 2：主路输出 (Main Path) -> 聚合器 -> Final Agent
+            // 目标：schema + data -> Combined JSON
+            // =========================================================
+
+            // 这里直接使用匿名对象进行拼接：
+            // { "schema": [], "data": [] }
+            var combinedOutput = new
+            {
+                analysis = output.Analysis,         // 直接透传 Agent 生成的 Schema
+                data = rawData ?? []              // 拼接 SQL 查询的实际结果
+            };
+
+            return combinedOutput.ToJson();
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "执行数据分析意图失败。Database: {DbName}", dbName);
             return $"[系统错误]: 查询数据库 {dbName} 时发生异常 - {ex.Message}";
+        }
+    }
+    
+    private IWidget BuildWidget(VisualDecisionDto decision, IEnumerable<dynamic> data, IEnumerable<SchemaColumn> schema)
+    {
+        switch (decision.Type)
+        {
+            case WidgetType.StatsCard:
+                // 取第一行第一列，或者根据列名查找
+                var firstRow = data.First() as IDictionary<string, object>;
+                var value = firstRow.Values.First(); // 简单粗暴取第一个值
+
+                return new StatsCardWidget
+                {
+                    Title = decision.Title,
+                    Description = decision.Description,
+                    Data = new StatsCardData
+                    {
+                        Label = decision.Title,
+                        Value = value,
+                        Unit = decision.Unit
+                    }
+                };
+
+            case WidgetType.DataTable:
+                return new DataTableWidget
+                {
+                    Title = decision.Title,
+                    Description = decision.Description,
+                    Data = data.ToDataTableData(schema)
+                };
+
+            case WidgetType.Chart:
+                var dataset = data.ToChartDataset(schema);
+                return new ChartWidget
+                {
+                    Title = decision.Title,
+                    Description = decision.Description,
+                    Data = new ChartData
+                    {
+                        Category = decision.ChartConfig!.Category,
+                        Dataset = dataset,
+                        Encoding = new ChartEncoding
+                        {
+                            X = decision.ChartConfig.X,
+                            Y = string.IsNullOrWhiteSpace(decision.ChartConfig.Y) 
+                                ? []
+                                : [decision.ChartConfig.Y],
+                            SeriesName = decision.ChartConfig.Series
+                        }
+                    }
+                };
+
+            default:
+                throw new NotSupportedException($"不支持的 Widget 类型: {decision.Type}");
         }
     }
 }
