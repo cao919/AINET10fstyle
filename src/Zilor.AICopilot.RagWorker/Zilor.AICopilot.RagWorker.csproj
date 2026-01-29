@@ -7,6 +7,16 @@
         <UserSecretsId>dotnet-Zilor.AICopilot.RagWorker-75c36550-3329-461f-87a3-207334506df6</UserSecretsId>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <ContainerFamily>noble-chiseled-extra</ContainerFamily>
+        <ContainerRepository>zilor/aicopilot-ragworker</ContainerRepository>
+        <ContainerImageTag>latest</ContainerImageTag>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ContainerEnvironmentVariable Include="TZ" Value="Asia/Shanghai" />
+    </ItemGroup>
+
     <ItemGroup>
         <PackageReference Include="Aspire.Qdrant.Client" Version="13.1.0" />
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.1" />

@@ -1,8 +1,13 @@
 ﻿<script setup lang="ts">
 import {renderMarkdown} from '@/utils/markdown';
 import FunctionCallItem from './FunctionCallItem.vue';
+import ApprovalCard from './ApprovalCard.vue';
 import {type ChatChunk, ChunkType} from "@/types/protocols.ts";
-import type {FunctionCallChunk} from "@/types/models.ts";
+import type {ApprovalChunk, FunctionCallChunk} from "@/types/models.ts";
+import { useChatStore } from '@/stores/chatStore';
+
+// 连接 Store
+const store = useChatStore();
 
 const props = defineProps<{
   chunks: ChatChunk[]
@@ -12,6 +17,27 @@ const props = defineProps<{
 
 const getFunctionCall = (chunk : ChatChunk): FunctionCallChunk =>
   chunk as FunctionCallChunk;
+
+/**
+ * 处理用户批准操作
+ * @param callId 审批单 ID
+ * @param chunk 审批数据块
+ */
+const onApprove = async (callId: string, chunk: ApprovalChunk) => {
+  chunk.status = 'approved';
+  await store.submitApproval(callId, chunk);
+};
+
+/**
+ * 处理用户拒绝操作
+ * @param callId 审批单 ID
+ * @param chunk 审批数据块
+ */
+const onReject = async (callId: string, chunk: ApprovalChunk) => {
+  chunk.status = 'rejected';
+  await store.submitApproval(callId, chunk);
+};
+
 
 </script>
 
@@ -33,6 +59,13 @@ const getFunctionCall = (chunk : ChatChunk): FunctionCallChunk =>
           :mini="true"
         />
       </div>
+
+      <ApprovalCard
+        v-else-if="chunk.type === ChunkType.ApprovalRequest"
+        :chunk="chunk as ApprovalChunk"
+        @approve="(id) => onApprove(id, chunk as ApprovalChunk)"
+        @reject="(id) => onReject(id, chunk as ApprovalChunk)"
+      />
 
       <span v-if="isStreaming" class="cursor-blink">|</span>
     </template>

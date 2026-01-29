@@ -2,6 +2,8 @@ using Projects;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
+builder.AddDockerComposeEnvironment("compose");
+
 var password = builder.AddParameter("pg-password", secret: true);
 
 var postgresdb = builder.AddPostgres("postgres", password: password)
@@ -43,10 +45,7 @@ builder.AddProject<Zilor_AICopilot_RagWorker>("rag-worker")
     .WithReference(qdrant);
 
 builder.AddViteApp("aicopilot-webui", "../Zilor.AICopilot.Web")
-    .WithEndpoint("http", endpointAnnotation =>
-    {
-        endpointAnnotation.Port = 5173;
-    })
+    .WithExternalHttpEndpoints()
     .WaitFor(httpapi)
     .WithReference(httpapi);
 

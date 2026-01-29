@@ -7,6 +7,16 @@
         <UserSecretsId>dotnet-Zilor.AICopilot.MigrationService-aff48ac5-5afa-4518-a568-4fe403b7772e</UserSecretsId>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <ContainerFamily>noble-chiseled-extra</ContainerFamily>
+        <ContainerRepository>zilor/aicopilot-migration</ContainerRepository>
+        <ContainerImageTag>latest</ContainerImageTag>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ContainerEnvironmentVariable Include="TZ" Value="Asia/Shanghai" />
+    </ItemGroup>
+    
     <ItemGroup>
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.1" />
     </ItemGroup>

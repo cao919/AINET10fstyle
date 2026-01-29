@@ -33,8 +33,9 @@ export const chatService = {
    * @param sessionId 会话ID
    * @param message 用户输入的内容
    * @param callbacks 回调函数集合
+   * @param callIds
    */
-  async sendMessageStream(sessionId: string, message: string, callbacks: StreamCallbacks) {
+  async sendMessageStream(sessionId: string, message: string, callbacks: StreamCallbacks, callIds?: string[]) {
     const ctrl = new AbortController();
 
     try {
@@ -47,7 +48,8 @@ export const chatService = {
         },
         body: JSON.stringify({
           sessionId: sessionId,
-          message: message
+          message: message,
+          callIds: callIds
         }),
         signal: ctrl.signal,
 

@@ -18,7 +18,7 @@ public class McpServerBootstrap(
     public async IAsyncEnumerable<McpClient> StartAsync([EnumeratorCancellation] CancellationToken ct)
     {
         var query = dataQueryService.McpServerInfos
-            .Where(m => m.IsEnabled);
+            .Where(m => m.IsEnabled == true);
 
         var mcpServerInfos = await dataQueryService.ToListAsync(query);
 
