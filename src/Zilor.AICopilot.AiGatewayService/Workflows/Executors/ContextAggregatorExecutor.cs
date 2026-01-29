@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Agents.AI.Workflows;
-using Microsoft.Agents.AI.Workflows.Reflection;
 using Microsoft.Extensions.Logging;
 using Zilor.AICopilot.AiGatewayService.Agents;
 
-namespace Zilor.AICopilot.AiGatewayService.Workflows;
+namespace Zilor.AICopilot.AiGatewayService.Workflows.Executors;
 
 /// <summary>
 /// 上下文聚合执行器
@@ -15,8 +14,7 @@ namespace Zilor.AICopilot.AiGatewayService.Workflows;
 /// 只有当接收到的结果数量达到预期（3个）时，才进行合并并触发下游。
 /// </summary>
 public class ContextAggregatorExecutor(ILogger<ContextAggregatorExecutor> logger) 
-    : ReflectingExecutor<ContextAggregatorExecutor>("ContextAggregatorExecutor"), 
-        IMessageHandler<BranchResult>
+    : Executor<BranchResult>("ContextAggregatorExecutor")
 {
     // 内部状态：用于跨方法调用累积结果
     private readonly List<BranchResult> _accumulatedResults = [];
@@ -24,7 +22,7 @@ public class ContextAggregatorExecutor(ILogger<ContextAggregatorExecutor> logger
     // 硬编码预期分支数：Tools + Knowledge + DataAnalysis = 3
     private const int ExpectedBranchCount = 3;
 
-    public async ValueTask HandleAsync(
+    public override async ValueTask HandleAsync(
         BranchResult branchResult, 
         IWorkflowContext context,
         CancellationToken cancellationToken = default)

@@ -2,23 +2,22 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Agents.AI;
 using Microsoft.Agents.AI.Workflows;
-using Microsoft.Agents.AI.Workflows.Reflection;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
 using Zilor.AICopilot.AiGatewayService.Agents;
-using Zilor.AICopilot.DataAnalysisService.Plugins;
+using Zilor.AICopilot.AiGatewayService.Models;
 using Zilor.AICopilot.DataAnalysisService.Services;
 using Zilor.AICopilot.Services.Common.Contracts;
 using Zilor.AICopilot.Services.Common.Helper;
 using Zilor.AICopilot.Visualization;
 using Zilor.AICopilot.Visualization.Widgets;
+using VisualDecisionDto = Zilor.AICopilot.DataAnalysisService.Plugins.VisualDecisionDto;
 
-namespace Zilor.AICopilot.AiGatewayService.Workflows;
+namespace Zilor.AICopilot.AiGatewayService.Workflows.Executors;
 
 /// <summary>
 /// 数据分析执行器
@@ -28,16 +27,15 @@ public class DataAnalysisExecutor(
     DataAnalysisAgentBuilder agentBuilder,
     IDataQueryService dataQuery,
     VisualizationContext vizContext,
-    ILogger<DataAnalysisExecutor> logger)
-    : ReflectingExecutor<DataAnalysisExecutor>("DataAnalysisExecutor"),
-      IMessageHandler<List<IntentResult>, BranchResult>
+    ILogger<DataAnalysisExecutor> logger) :
+    Executor<List<IntentResult>>("DataAnalysisExecutor")
 {
     private const string AnalysisIntentPrefix = "Analysis.";
 
-    public async ValueTask<BranchResult> HandleAsync(
+    public override async ValueTask HandleAsync(
         List<IntentResult> intentResults, 
         IWorkflowContext context,
-        CancellationToken cancellationToken = default)
+        CancellationToken ct = default)
     {
         // 1. 筛选数据分析类意图
         // 过滤规则：必须以 Analysis. 开头，且置信度高于 0.6
@@ -50,7 +48,8 @@ public class DataAnalysisExecutor(
         {
             logger.LogDebug("未检测到数据分析意图，跳过执行。");
             // 返回空结果，表示该分支无产出
-            return BranchResult.FromDataAnalysis(string.Empty);
+            await context.SendMessageAsync(BranchResult.FromDataAnalysis(string.Empty), ct);
+            return;
         }
 
         logger.LogInformation("启动数据分析流程，命中目标数据库数量: {Count}", analysisIntents.Count);
@@ -59,10 +58,9 @@ public class DataAnalysisExecutor(
         var output = new StringBuilder();
         foreach (var intent in analysisIntents)
         {
-            output.AppendLine(await ProcessSingleIntentAsync(intent, context, cancellationToken));
+            output.AppendLine(await ProcessSingleIntentAsync(intent, context, ct));
         }
-
-        return BranchResult.FromDataAnalysis(output.ToString());
+        await context.SendMessageAsync(BranchResult.FromDataAnalysis(output.ToString()), ct);
     }
     
     /// <summary>

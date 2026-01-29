@@ -1,9 +1,10 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.Agents.AI;
 using Zilor.AICopilot.AgentPlugin;
-using Zilor.AICopilot.AiGatewayService.Agents;
 using Zilor.AICopilot.DataAnalysisService;
 using Zilor.AICopilot.DataAnalysisService.Plugins;
+
+namespace Zilor.AICopilot.AiGatewayService.Agents;
 
 public class DataAnalysisAgentBuilder(ChatAgentFactory agentFactory, AgentPluginLoader pluginLoader)
 {
