@@ -3,7 +3,8 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Zilor.AICopilot.HttpApi;
 using Zilor.AICopilot.Infrastructure;
-
+Console.OutputEncoding = System.Text.Encoding.UTF8;
+Console.InputEncoding = System.Text.Encoding.UTF8;
 var serviceName = Environment.GetEnvironmentVariable("OTEL_SERVICE_NAME") ?? nameof(Zilor.AICopilot.HttpApi);
 var otlpEndpoint = Environment.GetEnvironmentVariable("OTEL_EXPORTER_OTLP_ENDPOINT") ?? "http://localhost:4317";
             

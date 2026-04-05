@@ -131,11 +131,41 @@ public class RagService(
         // [配置建议]
         // - 本地模型: 建议 20 ~ 50 (取决于显卡)
         // - 云端模型: 建议 50 ~ 100
-        const int batchSize = 50;
+        const int batchSize = 20;
         
         // 用于收集所有生成的向量结果
         var allEmbeddings = new List<Embedding<float>>();
-        
+        // ====================== 核心修复 ======================
+        // 1. 清洗段落：过滤空值 + 超长截断 + 清理非法字符
+        var cleanedParagraphs = new List<string>();
+        foreach (var p in paragraphs)
+        {
+            // 空段落直接跳过
+            if (string.IsNullOrWhiteSpace(p))
+            {
+                logger.LogWarning("cao919@foxmail.com跳过空段落");
+                continue;
+            }
+
+            // 清理乱码/不可见字符
+            var cleanText = ReplaceInvalidCharacters(p);
+
+            // 超长截断（汉字 1500 字 = 安全范围）
+            if (cleanText.Length > 1500)
+            {
+                cleanText = cleanText.Substring(0, 1500);
+                logger.LogWarning("cao919@foxmail.com段落超长，已自动截断至 1500 字符");
+            }
+
+            cleanedParagraphs.Add(cleanText);
+        }
+
+        if (cleanedParagraphs.Count == 0)
+        {
+            logger.LogWarning("cao919@foxmail.com无有效段落可生成向量");
+            return (new List<Embedding<float>>(), 0);
+        }
+
         // 将段落切分为多个批次
         var batches = paragraphs.Chunk(batchSize).ToArray();
 
@@ -243,5 +273,22 @@ public class RagService(
 
         document.MarkAsIndexed();
         await dbContext.SaveChangesAsync(ct);
+    }
+
+    // ====================== 新增：清理乱码/非法字符 ======================
+    private string ReplaceInvalidCharacters(string input)
+    {
+        if (string.IsNullOrEmpty(input))
+            return input;
+
+        // 移除乱码、不可打印字符、0字符
+        var validChars = input.Where(c =>
+            !char.IsControl(c)
+            && c >= 32
+            && c != 0xFFFD
+            && c != '�'
+        ).ToArray();
+
+        return new string(validChars).Trim();
     }
 }

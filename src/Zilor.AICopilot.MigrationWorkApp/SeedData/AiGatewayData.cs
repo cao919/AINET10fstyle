@@ -14,10 +14,10 @@ public static class AiGatewayData
     {
         // 速度快、成本低的小模型
         var item1 = new LanguageModel(
-            "通义千问",
-            "qwen-flash",
+            "通义千问qwen3.5-27b",
+            "qwen3.5-27b",
             "https://dashscope.aliyuncs.com/compatible-mode/v1",
-            "sk-8d0257b4af374dac9975c37dd54a25da",
+            "sk-3e774090f33b4c489f82e589a9c20dbe",
             new ModelParameters
             {
                 MaxTokens = 1000 * 1000,
@@ -29,10 +29,10 @@ public static class AiGatewayData
         
         // 能力强的常规模型
         var item2 = new LanguageModel(
-            "通义千问",
-            "qwen3-max",
+            "通义千问qwen3-vl-flash-2026-01-22",
+            "qwen3-vl-flash-2026-01-22",
             "https://dashscope.aliyuncs.com/compatible-mode/v1",
-            "sk-8d0257b4af374dac9975c37dd54a25da",
+            "sk-3e774090f33b4c489f82e589a9c20dbe",
             new ModelParameters
             {
                 MaxTokens = 1000 * 1000,
@@ -44,10 +44,10 @@ public static class AiGatewayData
         
         // Mimo 免费模型
         var item3 = new LanguageModel(
-            "Xiaomi",
-            "mimo-v2-flash",
-            "https://api.xiaomimimo.com/v1",
-            "sk-co4iickg07cy5o9998xhy6eq8mafmdke8b2peyc8emy7xmjk",
+            "qwtongyi-xiaomi-analysis-flash",
+            "tongyi-xiaomi-analysis-flash",
+            "https://dashscope.aliyuncs.com/compatible-mode/v1",
+            "sk-3e774090f33b4c489f82e589a9c20dbe",
             new ModelParameters
             {
                 MaxTokens = 32 * 1000,

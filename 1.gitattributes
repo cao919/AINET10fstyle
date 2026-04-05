@@ -1,0 +1,4 @@
+* text=auto
+*.cs text utf-8
+*.json text utf-8
+*.csproj text utf-8
