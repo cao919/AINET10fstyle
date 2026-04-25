@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Zilor.AICopilot.AiGatewayService.Agents;
 using Zilor.AICopilot.AiGatewayService.Commands.ConversationTemplates;
@@ -38,6 +38,13 @@ public class AiGatewayController : ApiControllerBase
         return ReturnResult(result);
     }
 
+    [HttpPut("language-model")]
+    public async Task<IActionResult> UpdateLanguageModel(UpdateLanguageModelCommand command)
+    {
+        var result = await Sender.Send(command);
+        return ReturnResult(result);
+    }
+
     [HttpPost("conversation-template")]
     public async Task<IActionResult> CreateConversationTemplate(CreateConversationTemplateCommand command)
     {
@@ -47,6 +54,13 @@ public class AiGatewayController : ApiControllerBase
 
     [HttpDelete("conversation-template")]
     public async Task<IActionResult> DeleteConversationTemplate(DeleteConversationTemplateCommand command)
+    {
+        var result = await Sender.Send(command);
+        return ReturnResult(result);
+    }
+
+    [HttpPut("conversation-template")]
+    public async Task<IActionResult> UpdateConversationTemplate(UpdateConversationTemplateCommand command)
     {
         var result = await Sender.Send(command);
         return ReturnResult(result);

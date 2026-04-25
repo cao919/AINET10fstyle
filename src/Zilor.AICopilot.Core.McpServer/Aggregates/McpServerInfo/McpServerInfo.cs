@@ -1,4 +1,4 @@
-﻿using Zilor.AICopilot.SharedKernel.Domain;
+using Zilor.AICopilot.SharedKernel.Domain;
 
 namespace Zilor.AICopilot.Core.McpServer.Aggregates.McpServerInfo
 {
@@ -51,5 +51,16 @@ namespace Zilor.AICopilot.Core.McpServer.Aggregates.McpServerInfo
         public bool IsEnabled { get; private set; }
         
         public List<string>? SensitiveTools { get; private set; }
+
+        public void UpdateInfo(string name, string description, McpTransportType transportType, string? command, string arguments, bool isEnabled, List<string>? sensitiveTools)
+        {
+            Name = name;
+            Description = description;
+            TransportType = transportType;
+            Command = command;
+            Arguments = arguments;
+            IsEnabled = isEnabled;
+            SensitiveTools = sensitiveTools;
+        }
     }
 }

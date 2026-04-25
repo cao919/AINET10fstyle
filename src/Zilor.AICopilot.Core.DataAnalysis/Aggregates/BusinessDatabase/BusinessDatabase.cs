@@ -1,4 +1,4 @@
-﻿using Zilor.AICopilot.Core.DataAnalysis.Aggregates.BusinessDatabase;
+using Zilor.AICopilot.Core.DataAnalysis.Aggregates.BusinessDatabase;
 using Zilor.AICopilot.SharedKernel.Domain;
 
 /// <summary>
@@ -71,5 +71,10 @@ public class BusinessDatabase : IAggregateRoot
     {
         Name = name;
         Description = description;
+    }
+
+    public void SetEnabled(bool isEnabled)
+    {
+        IsEnabled = isEnabled;
     }
 }
