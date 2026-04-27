@@ -3,10 +3,10 @@
 -- 描述: 这是一个模拟电子产品销售的 ERP 数据库，设计用于测试 AI 的数据分析和 SQL 生成能力。
 -- =============================================================================
 
-DROP DATABASE IF EXISTS erp_demo;
-CREATE DATABASE erp_demo;
+DROP DATABASE IF EXISTS ERP_Core;
+CREATE DATABASE ERP_Core;
 
-\c erp_demo;
+\c ERP_Core;
 
 -- =============================================================================
 -- 1. 商品主表 (base_products)

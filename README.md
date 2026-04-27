@@ -9,7 +9,8 @@
 - **会话管理**：支持多轮对话，维护会话历史和上下文
 - **意图识别**：自动识别用户意图并路由到相应处理模块
 - **对话模板**：支持预定义对话模板，快速构建特定场景交互
-- **多模型支持**：支持配置和管理多种语言模型
+- **多模型支持**：支持配置和管理多种语言模型（OpenAI、阿里云、LM Studio 等）
+- **模型选择器**：前端支持从已配置的模型列表中选择对话模型
 
 ### 📚 知识中枢 (RAG)
 基于检索增强生成的知识管理系统，支持文档上传、向量化存储和智能检索。
@@ -83,6 +84,7 @@ src/
 - **Semantic Kernel** - 微软 AI 开发框架
 - **SK Agents** - 智能体框架
 - **SK Plugins** - 插件系统
+- **OpenAI Client** - OpenAI API 客户端（支持兼容 OpenAI 格式的本地模型）
 
 ### 数据存储
 - **PostgreSQL** - 主数据库
@@ -122,7 +124,23 @@ cd AINET10fstyle
 }
 ```
 
-3. 启动基础设施服务（使用 Docker）
+3. 配置 LM Studio 本地模型（可选）
+编辑数据库 `language_models` 表，配置本地模型：
+```sql
+INSERT INTO language_models (id, provider, name, base_url, api_key, max_tokens, temperature)
+VALUES (
+  gen_random_uuid(), 
+  'qwen/qwen3-vl-4b', 
+  'qwen/qwen3-vl-4b', 
+  'http://172.29.32.1:1234',  -- LM Studio 地址（不需要 /v1 后缀）
+  'sk-lm-khhETa90:CqVIN3qxiTHI9s0VwlAx', 
+  1024, 
+  0.8
+);
+```
+**注意**：`base_url` 不需要添加 `/v1` 后缀，系统会自动处理。
+
+4. 启动基础设施服务（使用 Docker）
 ```bash
 # 启动 PostgreSQL
 docker run -d --name postgres \

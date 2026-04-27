@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ClientModel;
 using System.ClientModel.Primitives;
 using System.Linq;
@@ -39,12 +39,20 @@ public class ChatAgentFactory(IServiceProvider serviceProvider)
         var httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
         var httpClient = httpClientFactory.CreateClient("OpenAI");
 
+        // 确保 BaseUrl 包含 /v1 路径
+        var baseUrl = model.BaseUrl;
+        if (!baseUrl.EndsWith("/v1", StringComparison.OrdinalIgnoreCase))
+        {
+            baseUrl = baseUrl.TrimEnd('/') + "/v1";
+        }
+
         var chatClientBuilder = new OpenAIClient(
                 new ApiKeyCredential(model.ApiKey ?? string.Empty),
                 new OpenAIClientOptions
                 {
-                    Endpoint = new Uri(model.BaseUrl),
-                    Transport = new HttpClientPipelineTransport(httpClient)
+                    Endpoint = new Uri(baseUrl),
+                    Transport = new HttpClientPipelineTransport(httpClient),
+                    NetworkTimeout = TimeSpan.FromMinutes(10)
                 })
             .GetChatClient(model.Name)
             .AsIChatClient()
